@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react"
 import {
   X, ChevronLeft, FileText, TrendingUp, Scale, FileCheck,
-  Sparkles, ArrowRight, Send, Loader2, ChevronDown, ChevronRight
+  Sparkles, ArrowRight, Send, Loader2, ChevronDown, ChevronRight, Search
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 

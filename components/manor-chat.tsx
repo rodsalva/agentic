@@ -1,16 +1,83 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useCallback } from "react"
 import { Sidebar } from "./sidebar"
 import { ChatArea } from "./chat-area"
+import { MonitoringDetailView } from "./monitoring-detail-view"
+import { MOCK_MONITORINGS, type MonitoringSubscription } from "@/lib/monitoring-data"
+
+export type InputMode = "default" | "pesquisar" | "monitorar"
 
 export function ManorChat() {
   const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [monitorings, setMonitorings] = useState<MonitoringSubscription[]>(MOCK_MONITORINGS)
+  const [selectedMonitoringId, setSelectedMonitoringId] = useState<string | null>(null)
+  const [inputMode, setInputMode] = useState<InputMode>("default")
+
+  const handleSelectMonitoring = useCallback((id: string) => {
+    setSelectedMonitoringId(id)
+    setMonitorings((prev) =>
+      prev.map((m) => m.id === id ? { ...m, hasNew: false, newCount: 0 } : m)
+    )
+  }, [])
+
+  const handleBackToChat = useCallback(() => {
+    setSelectedMonitoringId(null)
+  }, [])
+
+  const handleNewMonitoring = useCallback(() => {
+    setSelectedMonitoringId(null)
+    setInputMode("monitorar")
+  }, [])
+
+  const handleNewPesquisa = useCallback(() => {
+    setSelectedMonitoringId(null)
+    setInputMode("pesquisar")
+  }, [])
+
+  const handleAddMonitoring = useCallback((monitoring: MonitoringSubscription) => {
+    setMonitorings((prev) => [monitoring, ...prev])
+    setSelectedMonitoringId(monitoring.id)
+    setInputMode("default")
+  }, [])
+
+  const handleTogglePause = useCallback((id: string) => {
+    setMonitorings((prev) =>
+      prev.map((m) =>
+        m.id === id ? { ...m, status: m.status === "active" ? "paused" : "active" } : m
+      )
+    )
+  }, [])
+
+  const selectedMonitoring = monitorings.find((m) => m.id === selectedMonitoringId) ?? null
 
   return (
     <div className="flex h-screen bg-white">
-      <Sidebar isOpen={sidebarOpen} onToggle={() => setSidebarOpen(!sidebarOpen)} />
-      <ChatArea />
+      <Sidebar
+        isOpen={sidebarOpen}
+        onToggle={() => setSidebarOpen(!sidebarOpen)}
+        monitorings={monitorings}
+        selectedMonitoringId={selectedMonitoringId}
+        onSelectMonitoring={handleSelectMonitoring}
+        onNewMonitoring={handleNewMonitoring}
+        onNewPesquisa={handleNewPesquisa}
+      />
+
+      {selectedMonitoring ? (
+        <MonitoringDetailView
+          monitoring={selectedMonitoring}
+          onBack={handleBackToChat}
+          onTogglePause={handleTogglePause}
+        />
+      ) : (
+        <ChatArea
+          monitorings={monitorings}
+          inputMode={inputMode}
+          onSetInputMode={setInputMode}
+          onViewMonitoring={handleSelectMonitoring}
+          onAddMonitoring={handleAddMonitoring}
+        />
+      )}
     </div>
   )
 }

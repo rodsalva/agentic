@@ -663,7 +663,8 @@ export function DailyUpdatesArtifact() {
               <MonitoringSetupFlow
                 initialScope={{
                   sources: activeSource ? [activeSource] : [],
-                  tributos: activeTributo ? [activeTributo] : [],
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  tributos: activeTributo ? [activeTributo as any] : [],
                   assuntos: activeAssunto ? [activeAssunto] : [],
                 }}
                 isCustomPrompt={false}
