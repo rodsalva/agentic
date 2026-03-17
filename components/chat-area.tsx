@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState, useRef, useEffect } from "react"
-import { Send, Zap, Bell, Search, Plus, X, ArrowRight } from "lucide-react"
+import { Send, Zap, Bell, Search, Plus, X, ArrowRight, Lightbulb } from "lucide-react"
 import { DailyUpdatesArtifact } from "./daily-updates-artifact"
 import { cn } from "@/lib/utils"
 import type { MonitoringSubscription } from "@/lib/monitoring-data"
@@ -117,7 +117,7 @@ function PlusMenu({
         className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 transition-colors cursor-pointer text-left"
       >
         <div className="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
-          <Search className="w-3.5 h-3.5 text-gray-600" />
+          <Lightbulb className="w-3.5 h-3.5 text-gray-600" />
         </div>
         <p className="text-sm font-medium text-gray-900">Fazer pesquisa</p>
       </button>
@@ -146,7 +146,7 @@ function ModeTag({
   if (mode === "pesquisar") {
     return (
       <span className="group inline-flex items-center gap-1 pl-2 pr-1 py-0.5 bg-gray-100 text-gray-700 rounded-md text-xs font-medium flex-shrink-0">
-        <Search className="w-3 h-3 text-gray-500" />
+        <Lightbulb className="w-3 h-3 text-gray-500" />
         Pesquisa
         <button
           onClick={onRemove}
