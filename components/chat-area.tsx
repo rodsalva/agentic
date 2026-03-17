@@ -119,10 +119,7 @@ function PlusMenu({
         <div className="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
           <Search className="w-3.5 h-3.5 text-gray-600" />
         </div>
-        <div>
-          <p className="text-sm font-medium text-gray-900">Fazer pesquisa</p>
-          <p className="text-[11px] text-gray-400">Resposta aprofundada e fontes</p>
-        </div>
+        <p className="text-sm font-medium text-gray-900">Fazer pesquisa</p>
       </button>
       <button
         onClick={() => onSelect("monitorar")}
@@ -131,10 +128,7 @@ function PlusMenu({
         <div className="w-7 h-7 rounded-lg bg-amber-100 flex items-center justify-center flex-shrink-0">
           <Bell className="w-3.5 h-3.5 text-amber-600" />
         </div>
-        <div>
-          <p className="text-sm font-medium text-gray-900">Criar monitoramento</p>
-          <p className="text-[11px] text-gray-400">Acompanhe atualizações sobre um tema</p>
-        </div>
+        <p className="text-sm font-medium text-gray-900">Criar monitoramento</p>
       </button>
     </div>
   )
