@@ -90,30 +90,47 @@ function ItemDetail({ item, onBack }: { item: MonitoringItem; onBack: () => void
         Voltar
       </button>
 
-      <p className="text-xs text-gray-400 mb-3">
-        {item.source.toUpperCase()} · {item.date}
-      </p>
-      <h2 className="text-base font-medium text-gray-900 mb-4 leading-snug">{item.title}</h2>
-      <p className="text-sm text-gray-600 leading-relaxed mb-8">{item.ementa}</p>
-
-      <div className="space-y-3 text-sm text-gray-500 border-t border-gray-100 pt-6">
-        <div className="flex gap-6">
-          <span className="text-gray-400 w-16 flex-shrink-0">Órgão</span>
-          <span className="text-gray-700">{item.orgao}</span>
-        </div>
-        {item.turma && (
-          <div className="flex gap-6">
-            <span className="text-gray-400 w-16 flex-shrink-0">Turma</span>
-            <span className="text-gray-700">{item.turma}</span>
-          </div>
-        )}
-        {item.relator && (
-          <div className="flex gap-6">
-            <span className="text-gray-400 w-16 flex-shrink-0">Relator</span>
-            <span className="text-gray-700">{item.relator}</span>
-          </div>
-        )}
+      {/* O que mudou */}
+      <div className="mb-6">
+        <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-2">O que mudou</p>
+        <h2 className="text-base font-medium text-gray-900 mb-2 leading-snug">{item.title}</h2>
+        <p className="text-sm text-gray-600 leading-relaxed">{item.ementa}</p>
       </div>
+
+      {/* Onde */}
+      <div className="mb-6 border-t border-gray-100 pt-5">
+        <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-3">Onde</p>
+        <div className="space-y-2 text-sm">
+          <div className="flex gap-6">
+            <span className="text-gray-400 w-16 flex-shrink-0">Órgão</span>
+            <span className="text-gray-700">{item.orgao}</span>
+          </div>
+          {item.turma && (
+            <div className="flex gap-6">
+              <span className="text-gray-400 w-16 flex-shrink-0">Turma</span>
+              <span className="text-gray-700">{item.turma}</span>
+            </div>
+          )}
+          {item.relator && (
+            <div className="flex gap-6">
+              <span className="text-gray-400 w-16 flex-shrink-0">Relator</span>
+              <span className="text-gray-700">{item.relator}</span>
+            </div>
+          )}
+          <div className="flex gap-6">
+            <span className="text-gray-400 w-16 flex-shrink-0">Data</span>
+            <span className="text-gray-700">{item.date}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Implicações */}
+      {item.implications && (
+        <div className="mb-6 border-t border-gray-100 pt-5">
+          <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-2">Implicações</p>
+          <p className="text-sm text-gray-600 leading-relaxed">{item.implications}</p>
+        </div>
+      )}
     </div>
   )
 }
@@ -220,7 +237,7 @@ export function MonitoringDetailView({ monitoring, onBack, onTogglePause }: Moni
             )}
 
             {/* Impact summary */}
-            {monitoring.impactSummary && monitoring.newCount > 0 && (
+            {monitoring.impactSummary && (
               <div className="mb-6 pb-6 border-b border-gray-100">
                 <p className="text-xs text-gray-400 mb-2 uppercase tracking-wide">Análise de impacto</p>
                 <p className="text-sm text-gray-600 leading-relaxed">{monitoring.impactSummary}</p>
@@ -228,7 +245,7 @@ export function MonitoringDetailView({ monitoring, onBack, onTogglePause }: Moni
             )}
 
             {/* Suggestions */}
-            {monitoring.suggestions.length > 0 && monitoring.newCount > 0 && (
+            {monitoring.suggestions.length > 0 && (
               <div className="mb-6 pb-6 border-b border-gray-100">
                 <div className="flex flex-col gap-1">
                   {monitoring.suggestions.map((s, i) => (

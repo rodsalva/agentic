@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react"
 import { Sidebar } from "./sidebar"
-import { ChatArea } from "./chat-area"
+import { ChatArea } from "./chat-area-v2"
 import { MonitoringDetailView } from "./monitoring-detail-view"
 import { MOCK_MONITORINGS, type MonitoringSubscription } from "@/lib/monitoring-data"
 
@@ -13,6 +13,7 @@ export function ManorChat() {
   const [monitorings, setMonitorings] = useState<MonitoringSubscription[]>(MOCK_MONITORINGS)
   const [selectedMonitoringId, setSelectedMonitoringId] = useState<string | null>(null)
   const [inputMode, setInputMode] = useState<InputMode>("default")
+  const [chatMonitoringCount, setChatMonitoringCount] = useState(0)
 
   const handleSelectMonitoring = useCallback((id: string) => {
     setSelectedMonitoringId(id)
@@ -41,6 +42,13 @@ export function ManorChat() {
     setInputMode("default")
   }, [])
 
+  // Add monitoring from chat flow — does not navigate to detail view
+  const handleAddMonitoringFromChat = useCallback((monitoring: MonitoringSubscription) => {
+    setMonitorings((prev) => [monitoring, ...prev])
+    setChatMonitoringCount((c) => c + 1)
+    setInputMode("default")
+  }, [])
+
   const handleTogglePause = useCallback((id: string) => {
     setMonitorings((prev) =>
       prev.map((m) =>
@@ -61,6 +69,7 @@ export function ManorChat() {
         onSelectMonitoring={handleSelectMonitoring}
         onNewMonitoring={handleNewMonitoring}
         onNewPesquisa={handleNewPesquisa}
+        chatMonitoringCount={chatMonitoringCount}
       />
 
       {selectedMonitoring ? (
@@ -76,6 +85,7 @@ export function ManorChat() {
           onSetInputMode={setInputMode}
           onViewMonitoring={handleSelectMonitoring}
           onAddMonitoring={handleAddMonitoring}
+          onCreateMonitoringFromChat={handleAddMonitoringFromChat}
         />
       )}
     </div>

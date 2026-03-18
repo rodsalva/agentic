@@ -15,6 +15,7 @@ export interface MonitoringItem {
   date: string
   title: string
   ementa: string
+  implications?: string
   impact: ImpactLevel
   isNew: boolean
 }
@@ -72,6 +73,7 @@ export const MOCK_MONITORINGS: MonitoringSubscription[] = [
         title: "Ágio interno: novo precedente reforça vedação",
         ementa:
           "ÁGIO INTERNO. AMORTIZAÇÃO. IMPOSSIBILIDADE. O ágio gerado em operações entre partes relacionadas, sem efetivo desembolso, não pode ser amortizado para fins de apuração do IRPJ e CSLL.",
+        implications: "Contribuintes com estruturas de ágio interno ativo devem revisar posições fiscais. Risco de autuação aumentado. Recomenda-se análise do planejamento societário antes do encerramento do exercício.",
         impact: "alto",
         isNew: true,
       },
@@ -86,6 +88,7 @@ export const MOCK_MONITORINGS: MonitoringSubscription[] = [
         title: "Empresa veículo e propósito negocial",
         ementa:
           "TRIBUTÁRIO. IRPJ E CSLL. AMORTIZAÇÃO DE ÁGIO. EMPRESA VEÍCULO. AUSÊNCIA DE PROPÓSITO NEGOCIAL. Não é possível a amortização de ágio quando a operação societária foi realizada com o único propósito de obter vantagem fiscal.",
+        implications: "Consolida o entendimento contrário ao contribuinte. Operações em curso sem propósito negocial documentado estão expostas a autuação. Documentação robusta da racionalidade econômica é essencial.",
         impact: "alto",
         isNew: true,
       },
@@ -135,6 +138,7 @@ export const MOCK_MONITORINGS: MonitoringSubscription[] = [
         title: "Insumos em serviços: conceito ampliado",
         ementa:
           "TRIBUTÁRIO. PIS/COFINS. INSUMOS. SERVIÇOS. ESSENCIALIDADE E RELEVÂNCIA. O conceito de insumos deve ser interpretado à luz da atividade concreta do contribuinte, abrangendo despesas essenciais ou relevantes ao processo produtivo de serviços.",
+        implications: "Abre oportunidade de recuperação de créditos de PIS/COFINS não aproveitados em exercícios anteriores. Empresas de serviços e tecnologia devem revisar base de creditamento com urgência.",
         impact: "alto",
         isNew: true,
       },

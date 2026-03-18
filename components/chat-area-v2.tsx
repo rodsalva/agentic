@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState, useRef, useEffect } from "react"
-import { Send, Zap, Bell, Search, Plus, X, ArrowRight, ChevronDown, Check, Pencil, Lightbulb } from "lucide-react"
+import { Send, Zap, Bell, Search, BookOpen, Plus, X, ArrowRight, ChevronDown, Check, Pencil, Copy, Share2, Loader2 } from "lucide-react"
 import { DailyUpdatesArtifact } from "./daily-updates-artifact"
 import { cn } from "@/lib/utils"
 import type { MonitoringSubscription } from "@/lib/monitoring-data"
@@ -14,11 +14,18 @@ type MonitoringProposalData = {
   summary: string
 }
 
+type PesquisaProposalData = {
+  query: string
+  expandedQuery: string
+}
+
 type Message = {
   role: "user" | "assistant"
   content: string
-  contextType?: "daily-updates" | "monitoring-proposal"
+  contextType?: "daily-updates" | "monitoring-proposal" | "monitoring-created" | "pesquisa-proposal" | "pesquisa-result"
   monitoringProposal?: MonitoringProposalData
+  pesquisaProposal?: PesquisaProposalData
+  pesquisaResult?: { query: string; expandedQuery: string }
 }
 
 // ── Constants ─────────────────────────────────────────────────────
@@ -33,7 +40,7 @@ const DIGEST_RESPONSE: Message = {
 }
 
 const PLACEHOLDERS: Record<InputMode, string> = {
-  default: "Pesquise ou crie um monitoramento...",
+  default: "Criar pesquisa ou monitoramento...",
   pesquisar: "O que você quer pesquisar?",
   monitorar: "Descreva o tema a monitorar...",
 }
@@ -84,6 +91,259 @@ const MONITORAMENTO_SUGGESTIONS: Array<{
   },
 ]
 
+// ── Pesquisa helpers ──────────────────────────────────────────────
+
+const LOADING_STEPS = [
+  "Identificando tributos e fato gerador",
+  "Consultando legislação federal",
+  "Verificando jurisprudência do STF",
+  "Analisando acórdãos do CARF",
+  "Verificando jurisprudência do STJ",
+  "Cruzando fontes normativas",
+  "Estruturando análise tributária",
+  "Finalizando pesquisa",
+]
+
+function expandQuery(input: string): string {
+  return `Quais são as regras de incidência, legislação aplicável, jurisprudência relevante e o entendimento dos tribunais superiores e da Receita Federal sobre ${input.toLowerCase()}, no âmbito do direito tributário federal brasileiro, considerando as disposições legais vigentes e os precedentes administrativos e judiciais mais recentes?`
+}
+
+function generateMockResult(query: string): { title: string; content: string } {
+  const words = query.trim().split(/\s+/)
+  const title = words.slice(0, 6).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ")
+  const content = `## 1. Visão Geral
+
+A questão relacionada a **${query}** no âmbito do direito tributário federal envolve análise integrada da legislação vigente, da jurisprudência dos tribunais superiores e das orientações normativas das autoridades fiscais federais.
+
+## 2. Legislação Aplicável
+
+**Base normativa:** A disciplina legal do tema decorre da Constituição Federal, do Código Tributário Nacional e de legislação federal específica, incluindo leis ordinárias, decretos e instruções normativas da Receita Federal do Brasil.
+
+**Normas complementares:** Soluções de consulta da COSIT e pareceres normativos integram o arcabouço regulatório e vinculam a administração tributária.
+
+## 3. Jurisprudência
+
+### STF
+O Supremo Tribunal Federal já se pronunciou sobre aspectos constitucionais da matéria, com decisões de eficácia vinculante e erga omnes que balizam a interpretação de toda a cadeia normativa.
+
+### STJ
+A 1ª e 2ª Turmas do Superior Tribunal de Justiça consolidaram entendimento sobre os principais aspectos do tema, com precedentes repetitivos de observância obrigatória pelos demais tribunais e pela administração tributária.
+
+### CARF
+O Conselho Administrativo de Recursos Fiscais possui acórdãos relevantes sobre a matéria, refletindo o posicionamento fiscal federal e antecipando tendências da contencioso administrativo.
+
+## 4. Implicações Tributárias
+
+- **Incidência:** Análise do fato gerador e da base de cálculo aplicável conforme legislação vigente
+- **Alíquotas:** Variação conforme legislação específica e eventuais benefícios, isenções ou reduções aplicáveis
+- **Regimes especiais:** Possibilidade de enquadramento em regimes diferenciados dependendo das características da operação
+
+## 5. Obrigações Acessórias
+
+- **Declaração:** Procedimentos declaratórios exigidos pela Receita Federal, incluindo prazos e formas de entrega
+- **Documentação:** Comprovantes e registros contábeis necessários para suportar a posição fiscal adotada
+- **Controles internos:** Recomendações de governança tributária para mitigar risco de autuação`
+  return { title, content }
+}
+
+// ── Shared UI ─────────────────────────────────────────────────────
+
+function MIcon() {
+  return (
+    <div className="w-6 h-6 rounded-full bg-gray-100 border border-gray-200 flex items-center justify-center flex-shrink-0">
+      <img src="/manor-01.svg" alt="M" className="h-2.5 w-auto" />
+    </div>
+  )
+}
+
+function RSAvatar() {
+  return (
+    <div className="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
+      <span className="text-[10px] font-bold text-white leading-none">RS</span>
+    </div>
+  )
+}
+
+function renderInline(text: string): React.ReactNode {
+  const parts = text.split(/(\*\*[^*]+\*\*)/)
+  return parts.map((part, i) =>
+    part.startsWith("**") && part.endsWith("**")
+      ? <strong key={i} className="font-semibold text-gray-900">{part.slice(2, -2)}</strong>
+      : <React.Fragment key={i}>{part}</React.Fragment>
+  )
+}
+
+function RenderContent({ content }: { content: string }) {
+  const lines = content.split("\n")
+  return (
+    <div className="text-sm text-gray-700 leading-relaxed space-y-1">
+      {lines.map((line, i) => {
+        if (!line.trim()) return <div key={i} className="h-2" />
+        if (line.startsWith("## ")) return <p key={i} className="font-semibold text-gray-900 text-sm mt-4 mb-1">{line.slice(3)}</p>
+        if (line.startsWith("### ")) return <p key={i} className="font-medium text-gray-800 text-sm mt-2">{line.slice(4)}</p>
+        if (line.startsWith("- ")) return (
+          <div key={i} className="flex gap-2 ml-1">
+            <span className="text-gray-400 flex-shrink-0">•</span>
+            <span>{renderInline(line.slice(2))}</span>
+          </div>
+        )
+        return <p key={i}>{renderInline(line)}</p>
+      })}
+    </div>
+  )
+}
+
+// ── Pesquisa Proposal Bubble ──────────────────────────────────────
+
+function PesquisaProposalBubble({
+  data,
+  onConfirmed,
+}: {
+  data: PesquisaProposalData
+  onConfirmed: (expandedQuery: string) => void
+}) {
+  const [queryValue, setQueryValue] = useState(data.expandedQuery)
+  const [editing, setEditing] = useState(false)
+
+  return (
+    <div className="max-w-lg w-full">
+      <div className="flex items-center gap-2 mb-3">
+        <MIcon />
+      </div>
+
+      {/* Expanded query — editable */}
+      <div
+        className="bg-gray-100 rounded-2xl px-5 py-4 mb-3 cursor-text"
+        onClick={() => setEditing(true)}
+      >
+        {editing ? (
+          <textarea
+            autoFocus
+            value={queryValue}
+            onChange={(e) => setQueryValue(e.target.value)}
+            onBlur={() => setEditing(false)}
+            className="w-full text-sm text-gray-800 leading-relaxed bg-transparent resize-none outline-none"
+            rows={3}
+          />
+        ) : (
+          <p className="text-sm text-gray-800 leading-relaxed">{queryValue}</p>
+        )}
+      </div>
+
+      <div className="flex items-center gap-2">
+        <button
+          onClick={() => onConfirmed(queryValue)}
+          className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-medium transition-colors cursor-pointer"
+        >
+          <Check className="w-3.5 h-3.5" />
+          Prosseguir com esta pesquisa
+        </button>
+        <button
+          onClick={() => setEditing(true)}
+          className="px-4 py-2 border border-gray-200 text-gray-700 rounded-xl text-sm hover:bg-gray-50 transition-colors cursor-pointer"
+        >
+          Editar pesquisa
+        </button>
+      </div>
+    </div>
+  )
+}
+
+// ── Pesquisa Result Bubble ────────────────────────────────────────
+
+function PesquisaResultBubble({ expandedQuery }: { expandedQuery: string }) {
+  const [stepIdx, setStepIdx] = useState(0)
+  const [isLoaded, setIsLoaded] = useState(false)
+  const [pesquisaOpen, setPesquisaOpen] = useState(true)
+  const [respostaOpen, setRespostaOpen] = useState(true)
+  const { title, content } = generateMockResult(expandedQuery)
+
+  useEffect(() => {
+    if (isLoaded) return
+    const timer = setInterval(() => {
+      setStepIdx((prev) => {
+        const next = prev + 1
+        if (next >= LOADING_STEPS.length) {
+          clearInterval(timer)
+          setTimeout(() => setIsLoaded(true), 400)
+          return prev
+        }
+        return next
+      })
+    }, 450)
+    return () => clearInterval(timer)
+  }, [isLoaded])
+
+  return (
+    <div className="w-full">
+      {/* Header row */}
+      <div className="flex items-center gap-2 mb-4">
+        <MIcon />
+        {isLoaded ? (
+          <span className="text-sm font-medium text-gray-900">{title}</span>
+        ) : (
+          <>
+            <span className="text-sm text-gray-500">
+              Etapa {stepIdx + 1}/{LOADING_STEPS.length}: {LOADING_STEPS[stepIdx]}...
+            </span>
+            <Loader2 className="w-3.5 h-3.5 text-gray-400 animate-spin ml-auto" />
+          </>
+        )}
+      </div>
+
+      {/* Pesquisa section */}
+      <div className="border-t border-gray-100 py-3">
+        <div className="flex items-center justify-between mb-2">
+          <button
+            onClick={() => setPesquisaOpen((v) => !v)}
+            className="flex items-center gap-1 text-xs text-gray-500 hover:text-gray-800 cursor-pointer"
+          >
+            <ChevronDown className={cn("w-3.5 h-3.5 transition-transform", !pesquisaOpen && "-rotate-90")} />
+            Pesquisa
+          </button>
+          <button className="text-gray-300 hover:text-gray-500 cursor-pointer" onClick={() => navigator.clipboard?.writeText(expandedQuery)}>
+            <Copy className="w-3.5 h-3.5" />
+          </button>
+        </div>
+        {pesquisaOpen && (
+          <p className="text-sm text-gray-600 leading-relaxed pl-1">{expandedQuery}</p>
+        )}
+      </div>
+
+      {/* Resposta section — only when loaded */}
+      {isLoaded && (
+        <div className="border-t border-gray-100 py-3">
+          <div className="flex items-center justify-between mb-3">
+            <button
+              onClick={() => setRespostaOpen((v) => !v)}
+              className="flex items-center gap-1 text-xs text-gray-500 hover:text-gray-800 cursor-pointer"
+            >
+              <ChevronDown className={cn("w-3.5 h-3.5 transition-transform", !respostaOpen && "-rotate-90")} />
+              Resposta
+            </button>
+            <button className="text-gray-300 hover:text-gray-500 cursor-pointer" onClick={() => navigator.clipboard?.writeText(content)}>
+              <Copy className="w-3.5 h-3.5" />
+            </button>
+          </div>
+          {respostaOpen && (
+            <>
+              <RenderContent content={content} />
+              <div className="flex items-center gap-3 mt-6 pt-4 border-t border-gray-100">
+                <button className="text-gray-300 hover:text-gray-500 cursor-pointer" onClick={() => navigator.clipboard?.writeText(content)}>
+                  <Copy className="w-4 h-4" />
+                </button>
+                <button className="text-gray-300 hover:text-gray-500 cursor-pointer">
+                  <Share2 className="w-4 h-4" />
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
 // ── Monitoring Proposal Bubble ────────────────────────────────────
 
 const JURISDICTIONS = ["Federal", "São Paulo", "Rio de Janeiro", "Minas Gerais", "Todos os estados"]
@@ -93,9 +353,11 @@ const FREQUENCIES = ["Diário", "Semanal"]
 function MonitoringProposalBubble({
   data,
   onCreateMonitoring,
+  onConfirmed,
 }: {
   data: MonitoringProposalData
   onCreateMonitoring: (m: MonitoringSubscription) => void
+  onConfirmed: () => void
 }) {
   const [isExpanded, setIsExpanded] = useState(false)
   const [isConfirmed, setIsConfirmed] = useState(false)
@@ -103,7 +365,7 @@ function MonitoringProposalBubble({
   const [selectedSources, setSelectedSources] = useState<string[]>(["Legislação", "STF", "STJ"])
   const [selectedFrequency, setSelectedFrequency] = useState("Diário")
   // Notification state
-  const [emailEnabled, setEmailEnabled] = useState(false)
+  const [emailEnabled, setEmailEnabled] = useState(true)
   const [editingEmail, setEditingEmail] = useState(false)
   const [emailValue, setEmailValue] = useState("rodrigo@manor.com.br")
   const [whatsappEnabled, setWhatsappEnabled] = useState(false)
@@ -111,6 +373,9 @@ function MonitoringProposalBubble({
   // Share state
   const [shareInput, setShareInput] = useState("")
   const [shareEmails, setShareEmails] = useState<string[]>([])
+  // Editable summary
+  const [summaryValue, setSummaryValue] = useState(data.summary)
+  const [editingSummary, setEditingSummary] = useState(false)
 
   const toggleChip = (
     arr: string[],
@@ -140,6 +405,7 @@ function MonitoringProposalBubble({
     }
     onCreateMonitoring(newMonitoring)
     setIsConfirmed(true)
+    onConfirmed()
   }
 
   const chipClass = (active: boolean) =>
@@ -179,7 +445,7 @@ function MonitoringProposalBubble({
           </div>
           <div>
             <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Escopo</p>
-            <p className="text-sm text-gray-800 mt-0.5">{data.summary}</p>
+            <p className="text-sm text-gray-800 mt-0.5">{summaryValue}</p>
           </div>
           <div>
             <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Fontes</p>
@@ -216,26 +482,7 @@ function MonitoringProposalBubble({
                   <span className="text-sm text-gray-700">Email</span>
                 </div>
                 {emailEnabled && (
-                  <div className="flex items-center gap-1.5">
-                    {editingEmail ? (
-                      <input
-                        autoFocus
-                        type="email"
-                        value={emailValue}
-                        onChange={(e) => setEmailValue(e.target.value)}
-                        onBlur={() => setEditingEmail(false)}
-                        onKeyDown={(e) => e.key === "Enter" && setEditingEmail(false)}
-                        className="text-xs border border-green-200 rounded px-1.5 py-0.5 bg-white focus:outline-none focus:border-green-400 w-44"
-                      />
-                    ) : (
-                      <>
-                        <span className="text-xs text-gray-400">{emailValue}</span>
-                        <button onClick={() => setEditingEmail(true)} className="text-gray-300 hover:text-gray-500 cursor-pointer">
-                          <Pencil className="w-3 h-3" />
-                        </button>
-                      </>
-                    )}
-                  </div>
+                  <span className="text-xs text-gray-400">{emailValue}</span>
                 )}
               </div>
             </div>
@@ -290,10 +537,9 @@ function MonitoringProposalBubble({
               value={shareInput}
               onChange={(e) => setShareInput(e.target.value)}
               onKeyDown={handleShareKeyDown}
-              placeholder="mail de usuário da organização"
+              placeholder="Email de usuário da organização"
               className="w-full px-3 py-1.5 text-sm border border-green-200 rounded-lg bg-white focus:outline-none focus:border-green-400 placeholder:text-gray-300"
             />
-            <p className="text-[11px] text-gray-400">Pressione Enter para adicionar. Apenas usuários da sua organização.</p>
           </div>
         </div>
       </div>
@@ -302,9 +548,23 @@ function MonitoringProposalBubble({
 
   return (
     <div className="max-w-lg">
-      {/* AI summary bubble */}
-      <div className="bg-gray-100 rounded-2xl px-5 py-4 mb-3">
-        <p className="text-sm text-gray-800 leading-relaxed">{data.summary}</p>
+      {/* AI summary bubble — click to edit */}
+      <div
+        className="bg-gray-100 rounded-2xl px-5 py-4 mb-3 cursor-text"
+        onClick={() => setEditingSummary(true)}
+      >
+        {editingSummary ? (
+          <textarea
+            autoFocus
+            value={summaryValue}
+            onChange={(e) => setSummaryValue(e.target.value)}
+            onBlur={() => setEditingSummary(false)}
+            className="w-full text-sm text-gray-800 leading-relaxed bg-transparent resize-none outline-none"
+            rows={4}
+          />
+        ) : (
+          <p className="text-sm text-gray-800 leading-relaxed">{summaryValue}</p>
+        )}
       </div>
 
       {/* Collapsible refinement section */}
@@ -425,7 +685,7 @@ function PlusMenu({
         className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 transition-colors cursor-pointer text-left"
       >
         <div className="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
-          <Search className="w-3.5 h-3.5 text-gray-600" />
+          <BookOpen className="w-3.5 h-3.5 text-gray-600" />
         </div>
         <p className="text-sm font-medium text-gray-900">Fazer pesquisa</p>
       </button>
@@ -454,7 +714,7 @@ function ModeTag({
   if (mode === "pesquisar") {
     return (
       <span className="group inline-flex items-center gap-1 pl-2 pr-1 py-0.5 bg-gray-100 text-gray-700 rounded-md text-xs font-medium flex-shrink-0">
-        <Lightbulb className="w-3 h-3 text-gray-500" />
+        <BookOpen className="w-3 h-3 text-gray-500" />
         Pesquisa
         <button
           onClick={onRemove}
@@ -573,6 +833,19 @@ export function ChatArea({
           contextType: "monitoring-proposal",
           monitoringProposal: { topic, summary },
         },
+      ])
+      setMessage("")
+      onSetInputMode("default")
+      return
+    }
+
+    if (inputMode === "pesquisar") {
+      const query = content.trim()
+      const expandedQuery = expandQuery(query)
+      setMessages((prev) => [
+        ...prev,
+        { role: "user", content: query },
+        { role: "assistant", content: "", contextType: "pesquisa-proposal", pesquisaProposal: { query, expandedQuery } },
       ])
       setMessage("")
       onSetInputMode("default")
@@ -815,6 +1088,10 @@ export function ChatArea({
 
   // ── Chat view ───────────────────────────────────────────────────
   const isShowingArtifact = messages.some((m) => m.contextType === "daily-updates")
+  const isShowingMonitoringProposal = messages.some((m) => m.contextType === "monitoring-proposal")
+    && !messages.some((m) => m.contextType === "monitoring-created")
+  const isShowingPesquisaProposal = messages.some((m) => m.contextType === "pesquisa-proposal")
+    && !messages.some((m) => m.contextType === "pesquisa-result")
 
   const renderChat = () => (
     <>
@@ -829,13 +1106,49 @@ export function ChatArea({
               )
             }
 
+            if (msg.role === "assistant" && msg.contextType === "pesquisa-proposal" && msg.pesquisaProposal) {
+              return (
+                <div key={index} className="flex justify-start w-full">
+                  <PesquisaProposalBubble
+                    data={msg.pesquisaProposal}
+                    onConfirmed={(expandedQuery) => setMessages((prev) => [
+                      ...prev,
+                      { role: "assistant", content: "", contextType: "pesquisa-result", pesquisaResult: { query: msg.pesquisaProposal!.query, expandedQuery } },
+                    ])}
+                  />
+                </div>
+              )
+            }
+
+            if (msg.role === "assistant" && msg.contextType === "pesquisa-result" && msg.pesquisaResult) {
+              return (
+                <div key={index} className="w-full">
+                  <PesquisaResultBubble expandedQuery={msg.pesquisaResult.expandedQuery} />
+                </div>
+              )
+            }
+
             if (msg.role === "assistant" && msg.contextType === "monitoring-proposal" && msg.monitoringProposal) {
               return (
                 <div key={index} className="flex justify-start">
                   <MonitoringProposalBubble
                     data={msg.monitoringProposal}
                     onCreateMonitoring={onCreateMonitoringFromChat}
+                    onConfirmed={() => setMessages((prev) => [
+                      ...prev,
+                      { role: "assistant", content: "Monitoramento criado. Posso ajudar em algo mais?", contextType: "monitoring-created" },
+                    ])}
                   />
+                </div>
+              )
+            }
+
+            if (msg.contextType === "monitoring-created") {
+              return (
+                <div key={index} className="flex justify-start">
+                  <div className="bg-gray-100 rounded-2xl px-5 py-3.5">
+                    <p className="text-sm text-gray-800">{msg.content}</p>
+                  </div>
                 </div>
               )
             }
@@ -845,10 +1158,14 @@ export function ChatArea({
               msg.role === "user" &&
               index + 1 < messages.length &&
               messages[index + 1]?.contextType === "monitoring-proposal"
+            const isPesquisaTrigger =
+              msg.role === "user" &&
+              index + 1 < messages.length &&
+              messages[index + 1]?.contextType === "pesquisa-proposal"
 
             return (
               <div key={index} className="space-y-3">
-                <div className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+                <div className={`flex items-start gap-2 ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
                   {isDigestTrigger ? (
                     <div className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-full bg-white">
                       <Zap className="w-3.5 h-3.5 text-blue-500" />
@@ -856,18 +1173,23 @@ export function ChatArea({
                         {TOTAL_UPDATES} atualizações nas últimas 24h
                       </span>
                     </div>
-                  ) : isMonitoringTrigger ? (
-                    <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 text-gray-700 rounded-full text-sm">
-                      <Bell className="w-3.5 h-3.5 text-amber-500" />
-                      <span>{msg.content}</span>
-                    </div>
-                  ) : (
-                    <div className={`max-w-[80%] px-5 py-3.5 rounded-lg ${
-                      msg.role === "user" ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"
-                    }`}>
-                      <p className={msg.role === "assistant" ? "text-base" : "text-sm"}>
+                  ) : isMonitoringTrigger || isPesquisaTrigger ? (
+                    <>
+                      <div className="px-4 py-2 border border-gray-200 rounded-full bg-white text-sm text-gray-700">
                         {msg.content}
-                      </p>
+                      </div>
+                      <RSAvatar />
+                    </>
+                  ) : msg.role === "user" ? (
+                    <>
+                      <div className="max-w-[70%] px-4 py-2.5 rounded-2xl border border-gray-200 bg-white">
+                        <p className="text-sm text-gray-800">{msg.content}</p>
+                      </div>
+                      <RSAvatar />
+                    </>
+                  ) : (
+                    <div className="bg-gray-100 rounded-2xl px-5 py-3.5 max-w-[80%]">
+                      <p className="text-sm text-gray-800">{msg.content}</p>
                     </div>
                   )}
                 </div>
@@ -877,7 +1199,7 @@ export function ChatArea({
         </div>
       </div>
 
-      {!isShowingArtifact && (
+      {!isShowingArtifact && !isShowingMonitoringProposal && !isShowingPesquisaProposal && (
         <>
           <div className="px-4 pb-3 pt-2">
             <div className="max-w-2xl mx-auto">
@@ -899,9 +1221,6 @@ export function ChatArea({
                 </button>
               </div>
             </div>
-          </div>
-          <div className="px-4 pb-4 text-center">
-            <p className="text-xs text-gray-400">Direito Tributário Federal</p>
           </div>
         </>
       )}

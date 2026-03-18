@@ -7,7 +7,7 @@ import "./globals.css"
 
 const _geist = Geist({ subsets: ["latin"] })
 const _geistMono = Geist_Mono({ subsets: ["latin"] })
-const _playfair = Playfair_Display({ subsets: ["latin"], weight: ["400", "500", "600"] })
+const playfair = Playfair_Display({ subsets: ["latin"], weight: ["400", "500", "600", "700"], variable: "--font-playfair" })
 
 export const metadata: Metadata = {
   title: "Manor - Pesquisa Tributária",
@@ -22,7 +22,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
-      <body className={`font-sans antialiased`}>
+      <body className={`font-sans antialiased ${playfair.variable}`}>
         {children}
         <Analytics />
       </body>

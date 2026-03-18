@@ -13,7 +13,7 @@ import {
   Building2,
   User,
   ExternalLink,
-  Search,
+  BookOpen,
   FileSearch,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -401,7 +401,7 @@ export function MonitoringArtifact({
                   onClick={() => onSuggestionClick?.(suggestion)}
                   className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-gray-100 text-gray-700 text-xs font-medium hover:bg-gray-200 transition-colors cursor-pointer"
                 >
-                  {idx === 0 && <Search className="w-3 h-3" />}
+                  {idx === 0 && <BookOpen className="w-3 h-3" />}
                   {idx === 1 && <Bell className="w-3 h-3" />}
                   {idx === 2 && <FileSearch className="w-3 h-3" />}
                   {suggestion}
