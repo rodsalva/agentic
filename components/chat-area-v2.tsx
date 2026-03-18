@@ -150,8 +150,8 @@ O Conselho Administrativo de Recursos Fiscais possui acórdãos relevantes sobre
 
 function MIcon() {
   return (
-    <div className="w-6 h-6 rounded-full bg-gray-100 border border-gray-200 flex items-center justify-center flex-shrink-0">
-      <img src="/manor-01.svg" alt="M" className="h-2.5 w-auto" />
+    <div className="w-6 h-6 rounded-full bg-white border border-gray-100 flex items-center justify-center flex-shrink-0">
+      <span className="text-[13px] font-normal text-gray-800 leading-none" style={{ fontFamily: "var(--font-playfair)" }}>M</span>
     </div>
   )
 }
@@ -654,6 +654,7 @@ interface ChatAreaProps {
   onViewMonitoring: (id: string) => void
   onAddMonitoring: (monitoring: MonitoringSubscription) => void
   onCreateMonitoringFromChat: (monitoring: MonitoringSubscription) => void
+  onFirstMessage?: () => void
 }
 
 // ── Plus menu ─────────────────────────────────────────────────────
@@ -805,8 +806,10 @@ export function ChatArea({
   onViewMonitoring,
   onAddMonitoring,
   onCreateMonitoringFromChat,
+  onFirstMessage,
 }: ChatAreaProps) {
   const [message, setMessage] = useState("")
+  const hasCalledFirstMessage = useRef(false)
   const [messages, setMessages] = useState<Message[]>([])
   const [showPlusMenu, setShowPlusMenu] = useState(false)
   const plusRef = useRef<HTMLDivElement>(null)
@@ -820,6 +823,11 @@ export function ChatArea({
   const handleSendMessage = (text?: string) => {
     const content = text ?? message
     if (!content.trim()) return
+
+    if (!hasCalledFirstMessage.current) {
+      hasCalledFirstMessage.current = true
+      onFirstMessage?.()
+    }
 
     if (inputMode === "monitorar") {
       const topic = content.trim()

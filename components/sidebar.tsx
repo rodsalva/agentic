@@ -16,14 +16,34 @@ export interface Conversation {
 }
 
 const conversations: Conversation[] = [
-  { id: "1",  title: "Nova Conversa",             pesquisas: 0, monitoramentos: 0, monitoramentosNew: 0 },
-  { id: "2",  title: "Questão Tributária Gen...",  pesquisas: 3, monitoramentos: 2, monitoramentosNew: 1 },
-  { id: "5",  title: "Legislação IRPF Pensã...",  pesquisas: 1, monitoramentos: 0, monitoramentosNew: 0 },
-  { id: "6",  title: "Transfer Pricing 2024",     pesquisas: 4, monitoramentos: 1, monitoramentosNew: 1 },
-  { id: "7",  title: "Tributação de Pensão ...",  pesquisas: 2, monitoramentos: 3, monitoramentosNew: 2 },
-  { id: "8",  title: "Tratamento Tributário ...", pesquisas: 0, monitoramentos: 1, monitoramentosNew: 0 },
-  { id: "9",  title: "como a manor foi feita",    pesquisas: 1, monitoramentos: 0, monitoramentosNew: 0 },
-  { id: "10", title: "o flamengo joga quand...",  pesquisas: 2, monitoramentos: 0, monitoramentosNew: 0 },
+  {
+    id: "1",
+    title: "Ágio Interno · CARF e STJ",
+    pesquisas: 3,
+    monitoramentos: 2,
+    monitoramentosNew: 2,
+  },
+  {
+    id: "2",
+    title: "IRPF sobre Pensão Alimentícia",
+    pesquisas: 2,
+    monitoramentos: 1,
+    monitoramentosNew: 0,
+  },
+  {
+    id: "3",
+    title: "Reforma Tributária · IBS e CBS",
+    pesquisas: 1,
+    monitoramentos: 1,
+    monitoramentosNew: 1,
+  },
+  {
+    id: "4",
+    title: "Transfer Pricing · Métodos RFB",
+    pesquisas: 4,
+    monitoramentos: 0,
+    monitoramentosNew: 0,
+  },
 ]
 
 // ── Props ─────────────────────────────────────────────────────────
@@ -33,10 +53,13 @@ interface SidebarProps {
   onToggle: () => void
   monitorings: MonitoringSubscription[]
   selectedMonitoringId: string | null
+  selectedConversationId: string | null
   onSelectMonitoring: (id: string) => void
+  onSelectConversation: (id: string) => void
   onNewMonitoring: () => void
   onNewPesquisa: () => void
   chatMonitoringCount: number
+  hasChatMessages: boolean
 }
 
 // ── Collapsed sidebar ─────────────────────────────────────────────
@@ -72,10 +95,13 @@ export function Sidebar({
   onToggle,
   monitorings,
   selectedMonitoringId,
+  selectedConversationId,
   onSelectMonitoring,
+  onSelectConversation,
   onNewMonitoring,
   onNewPesquisa,
   chatMonitoringCount,
+  hasChatMessages,
 }: SidebarProps) {
 
   if (!isOpen) {
@@ -113,26 +139,40 @@ export function Sidebar({
 
       <div className="flex-1 overflow-y-auto px-2">
 
-        {/* Active conversation — current chat session */}
-        <div className="px-2 py-3 rounded-lg bg-gray-50 cursor-pointer group mb-1">
-          <span className="text-sm text-gray-700 truncate block mb-1.5">Conversa atual</span>
-          {chatMonitoringCount > 0 && (
-            <div className="flex items-center gap-3">
-              <span className="flex items-center gap-0.5 text-amber-500">
-                <Bell className="w-3 h-3" />
-                <span className="text-[10px] leading-none">{chatMonitoringCount}</span>
-              </span>
-            </div>
-          )}
-        </div>
+        {/* Active conversation — current chat session, only shown after first message */}
+        {hasChatMessages && (
+          <div
+            onClick={() => {}}
+            className="px-2 py-3 rounded-lg bg-gray-50 cursor-pointer group mb-1"
+          >
+            <span className="text-sm text-gray-700 truncate block mb-1.5">Conversa atual</span>
+            {chatMonitoringCount > 0 && (
+              <div className="flex items-center gap-3">
+                <span className="flex items-center gap-0.5 text-amber-500">
+                  <Bell className="w-3 h-3" />
+                  <span className="text-[10px] leading-none">{chatMonitoringCount}</span>
+                </span>
+              </div>
+            )}
+          </div>
+        )}
 
-        {conversations.map((conv) => (
+        {conversations.map((conv) => {
+          const isSelected = selectedConversationId === conv.id
+          return (
           <div
             key={conv.id}
-            className="px-2 py-3 rounded-lg hover:bg-gray-50 cursor-pointer group"
+            onClick={() => onSelectConversation(conv.id)}
+            className={cn(
+              "px-2 py-3 rounded-lg cursor-pointer group transition-colors",
+              isSelected ? "bg-gray-100" : "hover:bg-gray-50"
+            )}
           >
             {/* Title */}
-            <span className="text-sm text-gray-700 truncate block mb-1.5">{conv.title}</span>
+            <span className={cn(
+              "text-sm truncate block mb-1.5",
+              isSelected ? "font-medium text-gray-900" : "text-gray-700"
+            )}>{conv.title}</span>
 
             {/* Icons row — only if there's something to show */}
             {(conv.pesquisas > 0 || conv.monitoramentos > 0) && (
@@ -167,7 +207,7 @@ export function Sidebar({
               </div>
             )}
           </div>
-        ))}
+        )})}
       </div>
 
       {/* User profile */}
