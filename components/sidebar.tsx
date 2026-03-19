@@ -169,7 +169,7 @@ export function Sidebar({
       })()}
 
       {/* ── CONVERSAS section ─────────────────────────────────────── */}
-      <div className="px-4 pb-1 mt-6 flex items-center justify-between">
+      <div className="px-4 pb-1 mt-10 flex items-center justify-between">
         <span className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">
           Conversas
         </span>
