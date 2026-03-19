@@ -56,10 +56,12 @@ interface SidebarProps {
   selectedConversationId: string | null
   showDigest: boolean
   showMonitoringsList: boolean
+  showDocumentsList: boolean
   onSelectMonitoring: (id: string) => void
   onSelectConversation: (id: string) => void
   onShowDigest: () => void
   onShowMonitoringsList: () => void
+  onShowDocumentsList: () => void
   onNewMonitoring: () => void
   onNewPesquisa: () => void
   chatMonitoringCount: number
@@ -102,10 +104,12 @@ export function Sidebar({
   selectedConversationId,
   showDigest,
   showMonitoringsList,
+  showDocumentsList,
   onSelectMonitoring,
   onSelectConversation,
   onShowDigest,
   onShowMonitoringsList,
+  onShowDocumentsList,
   onNewMonitoring,
   onNewPesquisa,
   chatMonitoringCount,
@@ -135,8 +139,14 @@ export function Sidebar({
         const totalUpdates = monitorings.reduce((acc, m) => acc + (m.newCount ?? 0), 0)
         return (
           <div className="px-2 mt-4 space-y-0.5">
-            <button className="w-full flex items-center gap-2.5 px-2 py-2 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors cursor-pointer">
-              <BookOpen className="w-4 h-4 text-gray-400 flex-shrink-0" />
+            <button
+              onClick={onShowDocumentsList}
+              className={cn(
+                "w-full flex items-center gap-2.5 px-2 py-2 rounded-lg transition-colors cursor-pointer",
+                showDocumentsList ? "bg-gray-100 text-gray-900" : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+              )}
+            >
+              <BookOpen className={cn("w-4 h-4 flex-shrink-0", showDocumentsList ? "text-gray-600" : "text-gray-400")} />
               <span className="text-sm">Documentos</span>
             </button>
             <button

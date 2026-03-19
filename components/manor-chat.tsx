@@ -8,6 +8,7 @@ import { ConversationDetailView } from "./conversation-detail-view"
 import { PesquisaDetailView } from "./pesquisa-detail-view"
 import { DigestView } from "./digest-view"
 import { MonitoringsListView } from "./monitorings-list-view"
+import { DocumentsListView } from "./documents-list-view"
 import { MOCK_MONITORINGS, type MonitoringSubscription } from "@/lib/monitoring-data"
 import { MOCK_CONVERSATIONS, type PesquisaData } from "@/lib/conversation-data"
 
@@ -21,6 +22,7 @@ export function ManorChat() {
   const [selectedPesquisa, setSelectedPesquisa] = useState<PesquisaData | null>(null)
   const [showDigest, setShowDigest] = useState(false)
   const [showMonitoringsList, setShowMonitoringsList] = useState(false)
+  const [showDocumentsList, setShowDocumentsList] = useState(false)
   const [inputMode, setInputMode] = useState<InputMode>("default")
   const [chatMonitoringCount, setChatMonitoringCount] = useState(0)
   const [hasChatMessages, setHasChatMessages] = useState(false)
@@ -43,6 +45,7 @@ export function ManorChat() {
 
   const handleBackFromPesquisa = useCallback(() => {
     setSelectedPesquisa(null)
+    // if we came from documents list, stay there (showDocumentsList remains true)
   }, [])
 
   const handleSelectConversation = useCallback((id: string) => {
@@ -64,10 +67,21 @@ export function ManorChat() {
     setSelectedPesquisa(null)
     setShowDigest(false)
     setShowMonitoringsList(false)
+    setShowDocumentsList(false)
   }, [])
 
   const handleShowMonitoringsList = useCallback(() => {
     setShowMonitoringsList(true)
+    setShowDocumentsList(false)
+    setSelectedMonitoringId(null)
+    setSelectedConversationId(null)
+    setSelectedPesquisa(null)
+    setShowDigest(false)
+  }, [])
+
+  const handleShowDocumentsList = useCallback(() => {
+    setShowDocumentsList(true)
+    setShowMonitoringsList(false)
     setSelectedMonitoringId(null)
     setSelectedConversationId(null)
     setSelectedPesquisa(null)
@@ -137,17 +151,21 @@ export function ManorChat() {
         selectedConversationId={selectedConversationId}
         showDigest={showDigest}
         showMonitoringsList={showMonitoringsList}
+        showDocumentsList={showDocumentsList}
         onSelectMonitoring={handleSelectMonitoring}
         onSelectConversation={handleSelectConversation}
         onShowDigest={handleShowDigest}
         onShowMonitoringsList={handleShowMonitoringsList}
+        onShowDocumentsList={handleShowDocumentsList}
         onNewMonitoring={handleNewMonitoring}
         onNewPesquisa={handleNewPesquisa}
         chatMonitoringCount={chatMonitoringCount}
         hasChatMessages={hasChatMessages}
       />
 
-      {showMonitoringsList && !selectedMonitoringId ? (
+      {showDocumentsList && !selectedPesquisa ? (
+        <DocumentsListView onViewPesquisa={handleSelectPesquisa} />
+      ) : showMonitoringsList && !selectedMonitoringId ? (
         <MonitoringsListView
           monitorings={monitorings}
           onSelectMonitoring={handleSelectMonitoring}

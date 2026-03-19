@@ -665,24 +665,64 @@ function PlusMenu({
 
 // ── Mode tag (inside input) ───────────────────────────────────────
 
+type PesquisaDepth = "padrao" | "completa"
+
 function ModeTag({
   mode,
   onRemove,
+  pesquisaDepth,
+  onDepthChange,
 }: {
   mode: "pesquisar" | "monitorar"
   onRemove: () => void
+  pesquisaDepth?: PesquisaDepth
+  onDepthChange?: (d: PesquisaDepth) => void
 }) {
+  const [depthOpen, setDepthOpen] = useState(false)
+
   if (mode === "pesquisar") {
     return (
-      <span className="group inline-flex items-center gap-1 pl-2 pr-1 py-0.5 bg-gray-100 text-gray-700 rounded-md text-xs font-medium flex-shrink-0">
-        <BookOpen className="w-3 h-3 text-gray-500" />
-        Pesquisa
-        <button
-          onClick={onRemove}
-          className="ml-0.5 p-0.5 rounded hover:bg-gray-200 transition-colors cursor-pointer opacity-0 group-hover:opacity-100"
-        >
-          <X className="w-2.5 h-2.5 text-gray-400" />
-        </button>
+      <span className="inline-flex items-center gap-2 flex-shrink-0">
+        {/* Mode tag */}
+        <span className="group inline-flex items-center gap-1 pl-2 pr-1 py-0.5 bg-gray-100 text-gray-700 rounded-md text-xs font-medium">
+          <BookOpen className="w-3 h-3 text-gray-500" />
+          Pesquisa
+          <button
+            onClick={onRemove}
+            className="ml-0.5 p-0.5 rounded hover:bg-gray-200 transition-colors cursor-pointer opacity-0 group-hover:opacity-100"
+          >
+            <X className="w-2.5 h-2.5 text-gray-400" />
+          </button>
+        </span>
+
+        {/* Depth selector */}
+        <span className="relative">
+          <button
+            onClick={() => setDepthOpen((v) => !v)}
+            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md border border-gray-200 text-gray-500 hover:border-gray-300 hover:text-gray-700 transition-colors cursor-pointer text-xs bg-white"
+          >
+            {pesquisaDepth === "completa" ? "Completa" : "Padrão"}
+            <ChevronDown className="w-3 h-3 text-gray-400" />
+          </button>
+          {depthOpen && (
+            <div className="absolute left-0 top-full mt-2 bg-white border border-gray-100 rounded-xl shadow-lg z-50 w-56 overflow-hidden">
+              <button
+                onClick={() => { onDepthChange?.("padrao"); setDepthOpen(false) }}
+                className="w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors cursor-pointer border-b border-gray-50"
+              >
+                <p className="text-xs font-medium text-gray-800 mb-0.5">Padrão</p>
+                <p className="text-[11px] text-gray-400 leading-snug">Mais rápida. Cobre as principais fontes.</p>
+              </button>
+              <button
+                onClick={() => { onDepthChange?.("completa"); setDepthOpen(false) }}
+                className="w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors cursor-pointer"
+              >
+                <p className="text-xs font-medium text-gray-800 mb-0.5">Completa</p>
+                <p className="text-[11px] text-gray-400 leading-snug">Mais demorada. Análise aprofundada de todas as fontes.</p>
+              </button>
+            </div>
+          )}
+        </span>
       </span>
     )
   }
@@ -772,6 +812,7 @@ export function ChatArea({
   digestInitialMessage,
 }: ChatAreaProps) {
   const [message, setMessage] = useState("")
+  const [pesquisaDepth, setPesquisaDepth] = useState<PesquisaDepth>("padrao")
   const hasCalledFirstMessage = useRef(!!digestInitialMessage)
   const [messages, setMessages] = useState<Message[]>(() => {
     if (!digestInitialMessage) return []
@@ -1018,7 +1059,7 @@ export function ChatArea({
                   </div>
 
                   {/* Mode tag */}
-                  <ModeTag mode={inputMode} onRemove={handleRemoveTag} />
+                  <ModeTag mode={inputMode} onRemove={handleRemoveTag} pesquisaDepth={pesquisaDepth} onDepthChange={setPesquisaDepth} />
 
                   {/* Spacer */}
                   <div className="flex-1" />
