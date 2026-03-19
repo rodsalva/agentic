@@ -1163,7 +1163,7 @@ export function ChatArea({
                         </div>
                         <p className="text-sm font-medium text-gray-900">Atualizações</p>
                       </div>
-                      <p className="text-xs text-gray-400 leading-relaxed">Direito tributário federal · hoje</p>
+                      <p className="text-xs text-gray-400 leading-relaxed">Direito tributário federal</p>
                     </button>
                   </div>
                 </div>
