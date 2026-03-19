@@ -1255,31 +1255,27 @@ export function ChatArea({
         </div>
       </div>
 
-      {!isShowingMonitoringProposal && !isShowingPesquisaProposal && (
-        <>
-          <div className="px-4 pb-3 pt-2">
-            <div className="max-w-2xl mx-auto">
-              <div className="relative">
-                <input
-                  type="text"
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  placeholder="Digitar mensagem..."
-                  autoFocus
-                  className="w-full px-5 py-4 pr-14 border border-gray-200 rounded-full text-sm text-gray-600 placeholder:text-gray-400 focus:outline-none focus:ring-0 focus:border-gray-300"
-                />
-                <button
-                  onClick={() => handleSendMessage()}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-300 hover:text-gray-600 transition-colors"
-                >
-                  <Send className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
+      <div className="px-4 pb-3 pt-2">
+        <div className="max-w-2xl mx-auto">
+          <div className="relative">
+            <input
+              type="text"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Digitar mensagem..."
+              autoFocus
+              className="w-full px-5 py-4 pr-14 border border-gray-200 rounded-full text-sm text-gray-600 placeholder:text-gray-400 focus:outline-none focus:ring-0 focus:border-gray-300"
+            />
+            <button
+              onClick={() => handleSendMessage()}
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-300 hover:text-gray-600 transition-colors"
+            >
+              <Send className="w-4 h-4" />
+            </button>
           </div>
-        </>
-      )}
+        </div>
+      </div>
     </>
   )
 
