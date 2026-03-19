@@ -97,7 +97,7 @@ export function DigestView({ onBack, onStartConversation }: { onBack: () => void
           </button>
           <div>
             <h1 className="text-sm font-medium text-gray-900">Atualizações</h1>
-            <p className="text-xs text-gray-400 mt-0.5">Direito tributário federal · hoje</p>
+            <p className="text-xs text-gray-400 mt-0.5">Direito tributário federal</p>
           </div>
         </div>
       </div>
