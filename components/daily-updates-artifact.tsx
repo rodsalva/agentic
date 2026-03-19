@@ -431,7 +431,7 @@ function ItemDetailView({ item, onBack }: { item: UpdateItem; onBack: () => void
 }
 
 // ── Main Component ────────────────────────────────────────────────
-export function DailyUpdatesArtifact() {
+export function DailyUpdatesArtifact({ fullScreen = false }: { fullScreen?: boolean }) {
   const [timeRange, setTimeRange] = useState<TimeRange>("24h")
   const [activeSource, setActiveSource] = useState<SourceType | null>(null)
   const [activeTributo, setActiveTributo] = useState<Tributo | null>(null)
@@ -506,14 +506,20 @@ export function DailyUpdatesArtifact() {
   // Item detail view
   if (selectedItem) {
     return (
-      <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden w-full max-w-[940px]" style={{ height: "780px" }}>
+      <div
+        className={cn("bg-white overflow-hidden w-full", fullScreen ? "flex flex-col h-full" : "border border-gray-200 rounded-2xl max-w-[940px]")}
+        style={fullScreen ? undefined : { height: "780px" }}
+      >
         <ItemDetailView item={selectedItem} onBack={() => setSelectedItem(null)} />
       </div>
     )
   }
 
   return (
-    <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden w-full max-w-[940px] shadow-sm" style={{ height: "780px" }}>
+    <div
+      className={cn("bg-white overflow-hidden w-full", fullScreen ? "flex flex-col h-full" : "border border-gray-200 rounded-2xl max-w-[940px] shadow-sm")}
+      style={fullScreen ? undefined : { height: "780px" }}
+    >
       <div className="flex flex-col h-full">
 
         {/* Header */}

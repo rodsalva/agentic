@@ -1,7 +1,21 @@
 "use client"
 
 import React, { useState, useRef, useEffect } from "react"
-import { Send, Zap, Bell, Search, Plus, X, ArrowRight, ChevronDown, Check, Pencil, Lightbulb } from "lucide-react"
+import {
+  Send,
+  Zap,
+  Bell,
+  Search,
+  Plus,
+  X,
+  ArrowRight,
+  ArrowLeft,
+  ChevronDown,
+  ChevronRight,
+  Check,
+  Pencil,
+  Lightbulb,
+} from "lucide-react"
 import { DailyUpdatesArtifact } from "./daily-updates-artifact"
 import { cn } from "@/lib/utils"
 import type { MonitoringSubscription } from "@/lib/monitoring-data"
@@ -17,14 +31,35 @@ type MonitoringProposalData = {
 type Message = {
   role: "user" | "assistant"
   content: string
-  contextType?: "daily-updates" | "monitoring-proposal"
+  contextType?: "daily-updates" | "monitoring-proposal" | "research"
   monitoringProposal?: MonitoringProposalData
+  query?: string
 }
 
 // ── Constants ─────────────────────────────────────────────────────
 
 const DIGEST_USER_MSG = "O que mudou no direito tributário federal nas últimas 24 horas?"
 const TOTAL_UPDATES = 103
+
+const MOCK_RESEARCH_CONTENT = `## 1. Conceito e Distinção
+
+O **ágio interno** é gerado em operações societárias entre partes relacionadas, sem efetivo desembolso econômico externo ao grupo. Distingue-se do ágio externo, em que há aquisição de terceiro com pagamento de sobrepreço justificado por rentabilidade futura esperada.
+
+## 2. Posição Consolidada do CARF
+
+O CARF firmou entendimento, por meio de acórdãos paradigmáticos, de que a amortização de ágio interno é inadmissível para fins de apuração do IRPJ e CSLL, por ausência dos requisitos legais previstos no art. 7º da Lei 9.532/97.
+
+- **Fundamento principal:** Ausência de efetivo desembolso e de negócio jurídico real com terceiros
+- **Precedentes:** Acórdãos 1402-001.995, 9101-006.078 e 1402-006.038
+- **Penalidades:** Multas qualificadas de 150% em casos com indícios de dolo ou fraude
+
+## 3. Posição do STJ
+
+O STJ convergiu com o CARF na vedação à amortização de ágio interno. O tribunal entende que a operação societária deve envolver partes independentes e ter propósito negocial genuíno para que o ágio seja reconhecido fiscalmente.
+
+## 4. Recomendações Práticas
+
+Revise operações com estrutura societária semelhante e documente a racionalidade econômica de cada etapa. A comprovação de propósito negocial genuíno é o elemento central para afastar autuações.`
 
 const DIGEST_RESPONSE: Message = {
   role: "assistant",
@@ -549,6 +584,8 @@ export function ChatArea({
   const [message, setMessage] = useState("")
   const [messages, setMessages] = useState<Message[]>([])
   const [showPlusMenu, setShowPlusMenu] = useState(false)
+  const [expandedArtifact, setExpandedArtifact] = useState(false)
+  const [expandedResearch, setExpandedResearch] = useState<{ title: string; content: string } | null>(null)
   const plusRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
 
@@ -557,13 +594,17 @@ export function ChatArea({
     if (inputRef.current) inputRef.current.focus()
   }, [messages, inputMode])
 
-  const handleSendMessage = (text?: string) => {
+  const handleSendMessage = (text?: string, forceMode?: InputMode) => {
     const content = text ?? message
     if (!content.trim()) return
+    const mode = forceMode ?? inputMode
 
-    if (inputMode === "monitorar") {
+    if (mode === "monitorar") {
       const topic = content.trim()
       const summary = `Acompanhar alterações legislativas, jurisprudenciais e normativas relacionadas a: ${topic}. O monitoramento cobrirá mudanças em legislação federal, decisões de tribunais superiores e atos administrativos relevantes para o tema.`
+
+      // Create the monitoring subscription and also show a proposal message in-chat.
+      createMonitoring(topic)
       setMessages((prev) => [
         ...prev,
         { role: "user", content: topic },
@@ -574,17 +615,18 @@ export function ChatArea({
           monitoringProposal: { topic, summary },
         },
       ])
+
       setMessage("")
       onSetInputMode("default")
       return
     }
 
-    setMessages([...messages, { role: "user", content }])
+    setMessages((prev) => [...prev, { role: "user", content }])
     setMessage("")
     setTimeout(() => {
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: "Entendido. Estou processando sua solicitação..." },
+        { role: "assistant", content: MOCK_RESEARCH_CONTENT, contextType: "research", query: content },
       ])
     }, 500)
   }
@@ -780,7 +822,7 @@ export function ChatArea({
 
           {/* ── Contextual suggestions ─────────────────────────── */}
           {inputMode === "pesquisar" && (
-            <PesquisaSuggestions onSelect={(text) => handleSendMessage(text)} />
+            <PesquisaSuggestions onSelect={(text) => handleSendMessage(text, "pesquisar")} />
           )}
 
           {inputMode === "monitorar" && (
@@ -814,17 +856,51 @@ export function ChatArea({
   )
 
   // ── Chat view ───────────────────────────────────────────────────
-  const isShowingArtifact = messages.some((m) => m.contextType === "daily-updates")
-
   const renderChat = () => (
     <>
       <div className="flex-1 flex flex-col px-4 overflow-y-auto pt-6">
         <div className="max-w-2xl mx-auto w-full space-y-6">
           {messages.map((msg, index) => {
+            if (msg.role === "assistant" && msg.contextType === "research") {
+              return (
+                <div key={index} className="w-full">
+                  <button
+                    onClick={() => setExpandedResearch({ title: msg.query ?? "Pesquisa", content: msg.content })}
+                    className="w-full text-left border border-gray-200 rounded-2xl px-4 py-3.5 hover:border-gray-300 hover:shadow-sm transition-all cursor-pointer bg-white group"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2.5">
+                        <Lightbulb className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                        <div>
+                          <p className="text-sm font-medium text-gray-900 line-clamp-1">{msg.query ?? "Pesquisa"}</p>
+                          <p className="text-xs text-gray-400 mt-0.5">Pesquisa · Clique para abrir</p>
+                        </div>
+                      </div>
+                      <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-gray-500 transition-colors flex-shrink-0" />
+                    </div>
+                  </button>
+                </div>
+              )
+            }
+
             if (msg.role === "assistant" && msg.contextType === "daily-updates") {
               return (
                 <div key={index} className="w-full">
-                  <DailyUpdatesArtifact />
+                  <button
+                    onClick={() => setExpandedArtifact(true)}
+                    className="w-full text-left border border-gray-200 rounded-2xl px-4 py-3.5 hover:border-gray-300 hover:shadow-sm transition-all cursor-pointer bg-white group"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2.5">
+                        <Zap className="w-4 h-4 text-blue-500 flex-shrink-0" />
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">Atualizações tributárias</p>
+                          <p className="text-xs text-gray-400 mt-0.5">{TOTAL_UPDATES} atualizações nas últimas 24h</p>
+                        </div>
+                      </div>
+                      <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-gray-500 transition-colors flex-shrink-0" />
+                    </div>
+                  </button>
                 </div>
               )
             }
@@ -877,36 +953,73 @@ export function ChatArea({
         </div>
       </div>
 
-      {!isShowingArtifact && (
-        <>
-          <div className="px-4 pb-3 pt-2">
-            <div className="max-w-2xl mx-auto">
-              <div className="relative">
-                <input
-                  type="text"
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  placeholder="Digitar mensagem..."
-                  autoFocus
-                  className="w-full px-5 py-4 pr-14 border border-gray-200 rounded-full text-sm text-gray-600 placeholder:text-gray-400 focus:outline-none focus:ring-0 focus:border-gray-300"
-                />
-                <button
-                  onClick={() => handleSendMessage()}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-300 hover:text-gray-600 transition-colors"
-                >
-                  <Send className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
+      <div className="px-4 pb-3 pt-2">
+        <div className="max-w-2xl mx-auto">
+          <div className="relative">
+            <input
+              type="text"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Digitar mensagem..."
+              autoFocus
+              className="w-full px-5 py-4 pr-14 border border-gray-200 rounded-full text-sm text-gray-600 placeholder:text-gray-400 focus:outline-none focus:ring-0 focus:border-gray-300"
+            />
+            <button
+              onClick={() => handleSendMessage()}
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-300 hover:text-gray-600 transition-colors"
+            >
+              <Send className="w-4 h-4" />
+            </button>
           </div>
-          <div className="px-4 pb-4 text-center">
-            <p className="text-xs text-gray-400">Direito Tributário Federal</p>
-          </div>
-        </>
-      )}
+        </div>
+      </div>
+      <div className="px-4 pb-4 text-center">
+        <p className="text-xs text-gray-400">Direito Tributário Federal</p>
+      </div>
     </>
   )
+
+  if (expandedResearch) {
+    return (
+      <div className="flex-1 flex flex-col h-full min-w-0 bg-white">
+        <div className="px-6 pt-5 pb-4 border-b border-gray-100 flex-shrink-0">
+          <button
+            onClick={() => setExpandedResearch(null)}
+            className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-gray-700 transition-colors cursor-pointer"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            Voltar
+          </button>
+        </div>
+        <div className="flex-1 overflow-y-auto px-6 py-8 max-w-2xl mx-auto w-full [&::-webkit-scrollbar]:w-[2px] [&::-webkit-scrollbar-thumb]:bg-gray-100">
+          <h1 className="text-base font-medium text-gray-900 mb-6 leading-snug">{expandedResearch.title}</h1>
+          <div className="text-sm text-gray-600 leading-relaxed space-y-4 whitespace-pre-wrap">
+            {expandedResearch.content}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (expandedArtifact) {
+    return (
+      <div className="flex-1 flex flex-col h-full min-w-0 bg-white">
+        <div className="px-6 pt-5 pb-4 border-b border-gray-100 flex-shrink-0">
+          <button
+            onClick={() => setExpandedArtifact(false)}
+            className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-gray-700 transition-colors cursor-pointer"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            Voltar
+          </button>
+        </div>
+        <div className="flex-1 overflow-hidden">
+          <DailyUpdatesArtifact fullScreen />
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="flex-1 flex flex-col h-full min-w-0">
