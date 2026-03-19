@@ -69,41 +69,47 @@ function ScopedChat({ conversationTitle }: { conversationTitle: string }) {
   }
 
   return (
-    <div className="border-t border-gray-100 flex-shrink-0">
+    <div className="border-t border-gray-100 flex-shrink-0 px-6 py-3">
       {messages.length > 0 && (
-        <div className="px-6 py-4 space-y-3 max-h-48 overflow-y-auto">
+        <div className="max-w-sm mx-auto mb-2 space-y-1.5 max-h-32 overflow-y-auto">
           {messages.map((m, i) => (
             <div key={i} className={cn("flex", m.role === "user" ? "justify-end" : "justify-start")}>
               <p className={cn(
-                "max-w-[75%] text-sm leading-relaxed",
-                m.role === "user" ? "text-gray-900" : "text-gray-500"
+                "max-w-[80%] text-xs leading-relaxed px-3 py-1.5 rounded-2xl",
+                m.role === "user" ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-600"
               )}>
                 {m.text}
               </p>
             </div>
           ))}
-          {loading && <p className="text-sm text-gray-300 flex items-center gap-1.5"><Loader2 className="w-3 h-3 animate-spin" /> pensando...</p>}
+          {loading && (
+            <div className="flex justify-start">
+              <p className="text-xs text-gray-400 px-3 py-1.5 bg-gray-100 rounded-2xl">...</p>
+            </div>
+          )}
         </div>
       )}
-      <div className="px-6 py-4 flex items-center gap-3">
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && send()}
-          placeholder={`Pergunte sobre esta conversa...`}
-          className="flex-1 text-sm text-gray-700 placeholder:text-gray-300 bg-transparent outline-none"
-        />
-        <button
-          onClick={send}
-          disabled={!input.trim() || loading}
-          className={cn(
-            "flex-shrink-0 transition-colors",
-            input.trim() && !loading ? "text-gray-500 hover:text-gray-900 cursor-pointer" : "text-gray-200 cursor-not-allowed"
-          )}
-        >
-          <Send className="w-4 h-4" />
-        </button>
+      <div className="flex justify-center">
+        <div className="flex items-center gap-2 w-full max-w-sm border border-gray-200 rounded-2xl px-3.5 py-2 bg-white">
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && send()}
+            placeholder="Digitar mensagem..."
+            className="flex-1 text-xs text-gray-700 placeholder:text-gray-400 bg-transparent outline-none"
+          />
+          <button
+            onClick={send}
+            disabled={!input.trim() || loading}
+            className={cn(
+              "flex-shrink-0 transition-colors",
+              input.trim() && !loading ? "text-gray-500 hover:text-gray-900 cursor-pointer" : "text-gray-300 cursor-not-allowed"
+            )}
+          >
+            {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
+          </button>
+        </div>
       </div>
     </div>
   )
@@ -129,59 +135,21 @@ function PesquisaProposalDisplay({ pesquisa }: { pesquisa: PesquisaData }) {
 
 // ── Pesquisa result display ────────────────────────────────────────
 
-function PesquisaResultDisplay({ pesquisa }: { pesquisa: PesquisaData }) {
-  const [pesquisaOpen, setPesquisaOpen] = useState(false)
-  const [respostaOpen, setRespostaOpen] = useState(true)
-
+function PesquisaResultDisplay({ pesquisa, onViewPesquisa }: { pesquisa: PesquisaData; onViewPesquisa: (p: PesquisaData) => void }) {
   return (
     <div className="flex-1 min-w-0">
-      <p className="text-sm font-semibold text-gray-900 mb-1">{pesquisa.title}</p>
-
-      {/* Pesquisa section */}
-      <div className="border-t border-gray-100 mt-3">
-        <div
-          className="flex items-center justify-between py-2.5 cursor-pointer"
-          onClick={() => setPesquisaOpen((v) => !v)}
-        >
-          <div className="flex items-center gap-1 text-xs text-gray-400 select-none">
-            <ChevronDown className={cn("w-3 h-3 transition-transform", !pesquisaOpen && "-rotate-90")} />
-            Pesquisa
+      <button
+        onClick={() => onViewPesquisa(pesquisa)}
+        className="border border-gray-100 rounded-xl px-4 py-3 max-w-md bg-white text-left hover:bg-gray-50 transition-colors cursor-pointer w-full"
+      >
+        <div className="flex items-center gap-2 mb-2">
+          <div className="w-6 h-6 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
+            <BookOpen className="w-3 h-3 text-gray-400" />
           </div>
-          <button
-            onClick={(e) => { e.stopPropagation(); navigator.clipboard?.writeText(pesquisa.expandedQuery) }}
-            className="text-gray-300 hover:text-gray-500 cursor-pointer"
-          >
-            <Copy className="w-3 h-3" />
-          </button>
+          <p className="text-sm font-medium text-gray-900 flex-1 min-w-0 truncate">{pesquisa.title}</p>
         </div>
-        {pesquisaOpen && (
-          <p className="text-sm text-gray-500 leading-relaxed pb-3">{pesquisa.expandedQuery}</p>
-        )}
-      </div>
-
-      {/* Resposta section */}
-      <div className="border-t border-gray-100">
-        <div
-          className="flex items-center justify-between py-2.5 cursor-pointer"
-          onClick={() => setRespostaOpen((v) => !v)}
-        >
-          <div className="flex items-center gap-1 text-xs text-gray-400 select-none">
-            <ChevronDown className={cn("w-3 h-3 transition-transform", !respostaOpen && "-rotate-90")} />
-            Resposta
-          </div>
-          <button
-            onClick={(e) => { e.stopPropagation(); navigator.clipboard?.writeText(pesquisa.content) }}
-            className="text-gray-300 hover:text-gray-500 cursor-pointer"
-          >
-            <Copy className="w-3 h-3" />
-          </button>
-        </div>
-        {respostaOpen && (
-          <div className="pb-4">
-            <RenderContent content={pesquisa.content} />
-          </div>
-        )}
-      </div>
+        <p className="text-xs text-gray-400 leading-relaxed line-clamp-2">{pesquisa.expandedQuery}</p>
+      </button>
     </div>
   )
 }
@@ -284,11 +252,13 @@ function ChatHistory({
   pesquisas,
   monitoramentos,
   onViewMonitoring,
+  onViewPesquisa,
 }: {
   messages: ConvMessage[]
   pesquisas: PesquisaData[]
   monitoramentos: MonitoringSubscription[]
   onViewMonitoring: (id: string) => void
+  onViewPesquisa: (p: PesquisaData) => void
 }) {
   return (
     <div className="space-y-5 px-6 py-6">
@@ -321,7 +291,7 @@ function ChatHistory({
           return (
             <div key={i} data-pesquisa-id={pesquisa.id} className="flex items-start gap-3">
               <MIcon />
-              <PesquisaResultDisplay pesquisa={pesquisa} />
+              <PesquisaResultDisplay pesquisa={pesquisa} onViewPesquisa={onViewPesquisa} />
             </div>
           )
         }
@@ -370,9 +340,10 @@ interface ConversationDetailViewProps {
   conversationId: string
   onBack: () => void
   onViewMonitoring: (id: string) => void
+  onViewPesquisa: (p: PesquisaData) => void
 }
 
-export function ConversationDetailView({ conversationId, onBack, onViewMonitoring }: ConversationDetailViewProps) {
+export function ConversationDetailView({ conversationId, onBack, onViewMonitoring, onViewPesquisa }: ConversationDetailViewProps) {
   const conversation = MOCK_CONVERSATIONS.find((c) => c.id === conversationId)
   if (!conversation) return null
 
@@ -428,7 +399,7 @@ export function ConversationDetailView({ conversationId, onBack, onViewMonitorin
               >
                 <BookOpen className="w-3.5 h-3.5 text-gray-400" />
                 <span className="text-xs text-gray-600">
-                  {conversation.pesquisas.length} {conversation.pesquisas.length === 1 ? "pesquisa" : "pesquisas"}
+                  {conversation.pesquisas.length} {conversation.pesquisas.length === 1 ? "documento" : "documentos"}
                 </span>
               </button>
               {activeDropdown === "pesquisas" && (
@@ -442,7 +413,7 @@ export function ConversationDetailView({ conversationId, onBack, onViewMonitorin
                         idx < conversation.pesquisas.length - 1 && "border-b border-gray-50"
                       )}
                     >
-                      <BookOpen className={cn("w-3.5 h-3.5 flex-shrink-0 mt-0.5", p.isNew ? "text-blue-400" : "text-gray-300")} />
+                      <BookOpen className={cn("w-3.5 h-3.5 flex-shrink-0 mt-0.5", "text-gray-300")} />
                       <span className="text-sm text-gray-700 leading-snug">{p.title}</span>
                     </button>
                   ))}
@@ -504,6 +475,7 @@ export function ConversationDetailView({ conversationId, onBack, onViewMonitorin
             pesquisas={conversation.pesquisas}
             monitoramentos={conversation.monitoramentos}
             onViewMonitoring={onViewMonitoring}
+            onViewPesquisa={onViewPesquisa}
           />
         </div>
       </div>

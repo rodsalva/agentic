@@ -5,8 +5,11 @@ import { Sidebar } from "./sidebar"
 import { ChatArea } from "./chat-area-v2"
 import { MonitoringDetailView } from "./monitoring-detail-view"
 import { ConversationDetailView } from "./conversation-detail-view"
+import { PesquisaDetailView } from "./pesquisa-detail-view"
+import { DigestView } from "./digest-view"
+import { MonitoringsListView } from "./monitorings-list-view"
 import { MOCK_MONITORINGS, type MonitoringSubscription } from "@/lib/monitoring-data"
-import { MOCK_CONVERSATIONS } from "@/lib/conversation-data"
+import { MOCK_CONVERSATIONS, type PesquisaData } from "@/lib/conversation-data"
 
 export type InputMode = "default" | "pesquisar" | "monitorar"
 
@@ -15,9 +18,13 @@ export function ManorChat() {
   const [monitorings, setMonitorings] = useState<MonitoringSubscription[]>(MOCK_MONITORINGS)
   const [selectedMonitoringId, setSelectedMonitoringId] = useState<string | null>(null)
   const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null)
+  const [selectedPesquisa, setSelectedPesquisa] = useState<PesquisaData | null>(null)
+  const [showDigest, setShowDigest] = useState(false)
+  const [showMonitoringsList, setShowMonitoringsList] = useState(false)
   const [inputMode, setInputMode] = useState<InputMode>("default")
   const [chatMonitoringCount, setChatMonitoringCount] = useState(0)
   const [hasChatMessages, setHasChatMessages] = useState(false)
+  const [pendingDigestMessage, setPendingDigestMessage] = useState<string | null>(null)
 
   // Collect all monitorings from conversations so detail view works
   const allConversationMonitorings = MOCK_CONVERSATIONS.flatMap((c) => c.monitoramentos)
@@ -30,14 +37,41 @@ export function ManorChat() {
     )
   }, [])
 
+  const handleSelectPesquisa = useCallback((pesquisa: PesquisaData) => {
+    setSelectedPesquisa(pesquisa)
+  }, [])
+
+  const handleBackFromPesquisa = useCallback(() => {
+    setSelectedPesquisa(null)
+  }, [])
+
   const handleSelectConversation = useCallback((id: string) => {
     setSelectedConversationId(id)
     setSelectedMonitoringId(null)
+    setSelectedPesquisa(null)
+  }, [])
+
+  const handleShowDigest = useCallback(() => {
+    setShowDigest(true)
+    setSelectedMonitoringId(null)
+    setSelectedConversationId(null)
+    setSelectedPesquisa(null)
   }, [])
 
   const handleBackToChat = useCallback(() => {
     setSelectedMonitoringId(null)
     setSelectedConversationId(null)
+    setSelectedPesquisa(null)
+    setShowDigest(false)
+    setShowMonitoringsList(false)
+  }, [])
+
+  const handleShowMonitoringsList = useCallback(() => {
+    setShowMonitoringsList(true)
+    setSelectedMonitoringId(null)
+    setSelectedConversationId(null)
+    setSelectedPesquisa(null)
+    setShowDigest(false)
   }, [])
 
   const handleBackFromMonitoringToConversation = useCallback(() => {
@@ -81,6 +115,12 @@ export function ManorChat() {
     setHasChatMessages(true)
   }, [])
 
+  const handleStartConversationFromDigest = useCallback((msg: string) => {
+    setPendingDigestMessage(msg)
+    setShowDigest(false)
+    setHasChatMessages(true)
+  }, [])
+
   // Resolve the selected monitoring — check both global and conversation monitorings
   const selectedMonitoring =
     monitorings.find((m) => m.id === selectedMonitoringId) ??
@@ -95,18 +135,34 @@ export function ManorChat() {
         monitorings={monitorings}
         selectedMonitoringId={selectedMonitoringId}
         selectedConversationId={selectedConversationId}
+        showDigest={showDigest}
+        showMonitoringsList={showMonitoringsList}
         onSelectMonitoring={handleSelectMonitoring}
         onSelectConversation={handleSelectConversation}
+        onShowDigest={handleShowDigest}
+        onShowMonitoringsList={handleShowMonitoringsList}
         onNewMonitoring={handleNewMonitoring}
         onNewPesquisa={handleNewPesquisa}
         chatMonitoringCount={chatMonitoringCount}
         hasChatMessages={hasChatMessages}
       />
 
-      {selectedMonitoring ? (
+      {showMonitoringsList && !selectedMonitoringId ? (
+        <MonitoringsListView
+          monitorings={monitorings}
+          onSelectMonitoring={handleSelectMonitoring}
+        />
+      ) : showDigest ? (
+        <DigestView onBack={handleBackToChat} onStartConversation={handleStartConversationFromDigest} />
+      ) : selectedPesquisa ? (
+        <PesquisaDetailView
+          pesquisa={selectedPesquisa}
+          onBack={handleBackFromPesquisa}
+        />
+      ) : selectedMonitoring ? (
         <MonitoringDetailView
           monitoring={selectedMonitoring}
-          onBack={selectedConversationId ? handleBackFromMonitoringToConversation : handleBackToChat}
+          onBack={selectedConversationId ? handleBackFromMonitoringToConversation : showMonitoringsList ? () => setSelectedMonitoringId(null) : handleBackToChat}
           onTogglePause={handleTogglePause}
         />
       ) : selectedConversationId ? (
@@ -114,6 +170,7 @@ export function ManorChat() {
           conversationId={selectedConversationId}
           onBack={handleBackToChat}
           onViewMonitoring={handleSelectMonitoring}
+          onViewPesquisa={handleSelectPesquisa}
         />
       ) : (
         <ChatArea
@@ -121,9 +178,12 @@ export function ManorChat() {
           inputMode={inputMode}
           onSetInputMode={setInputMode}
           onViewMonitoring={handleSelectMonitoring}
+          onViewPesquisa={handleSelectPesquisa}
+          onShowDigest={handleShowDigest}
           onAddMonitoring={handleAddMonitoring}
           onCreateMonitoringFromChat={handleAddMonitoringFromChat}
           onFirstMessage={handleFirstMessage}
+          digestInitialMessage={pendingDigestMessage ?? undefined}
         />
       )}
     </div>

@@ -2,7 +2,6 @@
 
 import React, { useState, useRef, useEffect } from "react"
 import { Send, Zap, Bell, Search, BookOpen, Plus, X, ArrowRight, ChevronDown, Check, Pencil, Copy, Share2, Loader2 } from "lucide-react"
-import { DailyUpdatesArtifact } from "./daily-updates-artifact"
 import { cn } from "@/lib/utils"
 import type { MonitoringSubscription } from "@/lib/monitoring-data"
 import type { InputMode } from "./manor-chat"
@@ -22,7 +21,7 @@ type PesquisaProposalData = {
 type Message = {
   role: "user" | "assistant"
   content: string
-  contextType?: "daily-updates" | "monitoring-proposal" | "monitoring-created" | "pesquisa-proposal" | "pesquisa-result"
+  contextType?: "monitoring-proposal" | "monitoring-created" | "pesquisa-proposal" | "pesquisa-result" | "digest-artifact"
   monitoringProposal?: MonitoringProposalData
   pesquisaProposal?: PesquisaProposalData
   pesquisaResult?: { query: string; expandedQuery: string }
@@ -30,14 +29,7 @@ type Message = {
 
 // ── Constants ─────────────────────────────────────────────────────
 
-const DIGEST_USER_MSG = "O que mudou no direito tributário federal nas últimas 24 horas?"
 const TOTAL_UPDATES = 103
-
-const DIGEST_RESPONSE: Message = {
-  role: "assistant",
-  content: "",
-  contextType: "daily-updates",
-}
 
 const PLACEHOLDERS: Record<InputMode, string> = {
   default: "Criar pesquisa ou monitoramento...",
@@ -251,11 +243,15 @@ function PesquisaProposalBubble({
 
 // ── Pesquisa Result Bubble ────────────────────────────────────────
 
-function PesquisaResultBubble({ expandedQuery }: { expandedQuery: string }) {
+function PesquisaResultBubble({
+  expandedQuery,
+  onViewPesquisa,
+}: {
+  expandedQuery: string
+  onViewPesquisa: (p: { id: string; title: string; expandedQuery: string; content: string; timestamp: string }) => void
+}) {
   const [stepIdx, setStepIdx] = useState(0)
   const [isLoaded, setIsLoaded] = useState(false)
-  const [pesquisaOpen, setPesquisaOpen] = useState(true)
-  const [respostaOpen, setRespostaOpen] = useState(true)
   const { title, content } = generateMockResult(expandedQuery)
 
   useEffect(() => {
@@ -276,68 +272,29 @@ function PesquisaResultBubble({ expandedQuery }: { expandedQuery: string }) {
 
   return (
     <div className="w-full">
-      {/* Header row */}
-      <div className="flex items-center gap-2 mb-4">
-        <MIcon />
-        {isLoaded ? (
-          <span className="text-sm font-medium text-gray-900">{title}</span>
-        ) : (
-          <>
-            <span className="text-sm text-gray-500">
-              Etapa {stepIdx + 1}/{LOADING_STEPS.length}: {LOADING_STEPS[stepIdx]}...
-            </span>
-            <Loader2 className="w-3.5 h-3.5 text-gray-400 animate-spin ml-auto" />
-          </>
-        )}
-      </div>
-
-      {/* Pesquisa section */}
-      <div className="border-t border-gray-100 py-3">
-        <div className="flex items-center justify-between mb-2">
-          <button
-            onClick={() => setPesquisaOpen((v) => !v)}
-            className="flex items-center gap-1 text-xs text-gray-500 hover:text-gray-800 cursor-pointer"
-          >
-            <ChevronDown className={cn("w-3.5 h-3.5 transition-transform", !pesquisaOpen && "-rotate-90")} />
-            Pesquisa
-          </button>
-          <button className="text-gray-300 hover:text-gray-500 cursor-pointer" onClick={() => navigator.clipboard?.writeText(expandedQuery)}>
-            <Copy className="w-3.5 h-3.5" />
-          </button>
+      {!isLoaded ? (
+        <div className="flex items-center gap-2">
+          <MIcon />
+          <span className="text-sm text-gray-500">
+            Etapa {stepIdx + 1}/{LOADING_STEPS.length}: {LOADING_STEPS[stepIdx]}...
+          </span>
+          <Loader2 className="w-3.5 h-3.5 text-gray-400 animate-spin ml-auto" />
         </div>
-        {pesquisaOpen && (
-          <p className="text-sm text-gray-600 leading-relaxed pl-1">{expandedQuery}</p>
-        )}
-      </div>
-
-      {/* Resposta section — only when loaded */}
-      {isLoaded && (
-        <div className="border-t border-gray-100 py-3">
-          <div className="flex items-center justify-between mb-3">
-            <button
-              onClick={() => setRespostaOpen((v) => !v)}
-              className="flex items-center gap-1 text-xs text-gray-500 hover:text-gray-800 cursor-pointer"
-            >
-              <ChevronDown className={cn("w-3.5 h-3.5 transition-transform", !respostaOpen && "-rotate-90")} />
-              Resposta
-            </button>
-            <button className="text-gray-300 hover:text-gray-500 cursor-pointer" onClick={() => navigator.clipboard?.writeText(content)}>
-              <Copy className="w-3.5 h-3.5" />
-            </button>
-          </div>
-          {respostaOpen && (
-            <>
-              <RenderContent content={content} />
-              <div className="flex items-center gap-3 mt-6 pt-4 border-t border-gray-100">
-                <button className="text-gray-300 hover:text-gray-500 cursor-pointer" onClick={() => navigator.clipboard?.writeText(content)}>
-                  <Copy className="w-4 h-4" />
-                </button>
-                <button className="text-gray-300 hover:text-gray-500 cursor-pointer">
-                  <Share2 className="w-4 h-4" />
-                </button>
+      ) : (
+        <div className="flex items-start gap-2">
+          <MIcon />
+          <button
+            onClick={() => onViewPesquisa({ id: `p-${Date.now()}`, title, expandedQuery, content, timestamp: "agora" })}
+            className="border border-gray-100 rounded-xl px-4 py-3 max-w-md bg-white text-left hover:bg-gray-50 transition-colors cursor-pointer"
+          >
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-6 h-6 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
+                <BookOpen className="w-3 h-3 text-gray-400" />
               </div>
-            </>
-          )}
+              <p className="text-sm font-medium text-gray-900 flex-1 min-w-0 truncate">{title}</p>
+            </div>
+            <p className="text-xs text-gray-400 leading-relaxed line-clamp-2">{expandedQuery}</p>
+          </button>
         </div>
       )}
     </div>
@@ -652,9 +609,12 @@ interface ChatAreaProps {
   inputMode: InputMode
   onSetInputMode: (mode: InputMode) => void
   onViewMonitoring: (id: string) => void
+  onViewPesquisa: (p: { id: string; title: string; expandedQuery: string; content: string; timestamp: string }) => void
+  onShowDigest: () => void
   onAddMonitoring: (monitoring: MonitoringSubscription) => void
   onCreateMonitoringFromChat: (monitoring: MonitoringSubscription) => void
   onFirstMessage?: () => void
+  digestInitialMessage?: string
 }
 
 // ── Plus menu ─────────────────────────────────────────────────────
@@ -804,13 +764,25 @@ export function ChatArea({
   inputMode,
   onSetInputMode,
   onViewMonitoring,
+  onViewPesquisa,
+  onShowDigest,
   onAddMonitoring,
   onCreateMonitoringFromChat,
   onFirstMessage,
+  digestInitialMessage,
 }: ChatAreaProps) {
   const [message, setMessage] = useState("")
-  const hasCalledFirstMessage = useRef(false)
-  const [messages, setMessages] = useState<Message[]>([])
+  const hasCalledFirstMessage = useRef(!!digestInitialMessage)
+  const [messages, setMessages] = useState<Message[]>(() => {
+    if (!digestInitialMessage) return []
+    const query = digestInitialMessage
+    const expandedQuery = expandQuery(query)
+    return [
+      { role: "assistant", content: "", contextType: "digest-artifact" },
+      { role: "user", content: query },
+      { role: "assistant", content: "", contextType: "pesquisa-proposal", pesquisaProposal: { query, expandedQuery } },
+    ]
+  })
   const [showPlusMenu, setShowPlusMenu] = useState(false)
   const plusRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
@@ -892,10 +864,7 @@ export function ChatArea({
   }
 
   const handleDigestClick = () => {
-    setMessages([
-      { role: "user", content: DIGEST_USER_MSG },
-      DIGEST_RESPONSE,
-    ])
+    onShowDigest()
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -935,8 +904,23 @@ export function ChatArea({
 
         {/* Brand */}
         <img src="/manor-logo.svg" alt="Manor" className="h-10 mb-3" />
-        <p className="text-sm text-gray-400 mb-8">Inteligência para o direito tributário federal</p>
+        <p className="text-sm text-gray-400 mb-12">Inteligência para o direito tributário federal</p>
 
+
+        {/* Updates pill — above input, default mode only */}
+        {inputMode === "default" && (
+          <div className="flex justify-center mb-8">
+            <button
+              onClick={handleDigestClick}
+              className="group flex items-center gap-2 px-4 py-2 border border-gray-200 hover:border-gray-300 hover:bg-gray-50 rounded-full transition-all cursor-pointer"
+            >
+              <Zap className="w-3.5 h-3.5 text-blue-500 group-hover:text-blue-600 transition-colors" />
+              <span className="text-xs text-gray-500 group-hover:text-gray-700 transition-colors">
+                {TOTAL_UPDATES} atualizações nas últimas 24h
+              </span>
+            </button>
+          </div>
+        )}
 
         {/* ── Input box ──────────────────────────────────────────── */}
         <div className="w-full relative">
@@ -1070,24 +1054,10 @@ export function ChatArea({
             />
           )}
 
-          {/* Updates pill — default mode only */}
-          {inputMode === "default" && (
-            <div className="flex justify-center mt-5">
-              <button
-                onClick={handleDigestClick}
-                className="group flex items-center gap-2 px-4 py-2 border border-gray-200 hover:border-gray-300 hover:bg-gray-50 rounded-full transition-all cursor-pointer"
-              >
-                <Zap className="w-3.5 h-3.5 text-blue-500 group-hover:text-blue-600 transition-colors" />
-                <span className="text-xs text-gray-500 group-hover:text-gray-700 transition-colors">
-                  {TOTAL_UPDATES} atualizações nas últimas 24h
-                </span>
-              </button>
-            </div>
-          )}
         </div>
 
         {/* Footnote */}
-        <p className="text-[11px] text-gray-300 text-center leading-relaxed mt-6">
+        <p className="text-[11px] text-gray-300 text-center leading-relaxed mt-8">
           Pesquisa e monitoramento sem opinião jurídica. Consulte especialistas.
         </p>
       </div>
@@ -1095,21 +1065,66 @@ export function ChatArea({
   )
 
   // ── Chat view ───────────────────────────────────────────────────
-  const isShowingArtifact = messages.some((m) => m.contextType === "daily-updates")
   const isShowingMonitoringProposal = messages.some((m) => m.contextType === "monitoring-proposal")
     && !messages.some((m) => m.contextType === "monitoring-created")
   const isShowingPesquisaProposal = messages.some((m) => m.contextType === "pesquisa-proposal")
     && !messages.some((m) => m.contextType === "pesquisa-result")
 
+  const isDigestConversation = messages.length > 0 && messages[0]?.contextType === "digest-artifact"
+  const [digestDropdownOpen, setDigestDropdownOpen] = useState(false)
+
   const renderChat = () => (
     <>
+      {isDigestConversation && (
+        <div className="px-6 pt-5 pb-4 border-b border-gray-100 flex-shrink-0">
+          <div className="max-w-2xl mx-auto w-full">
+            <h1 className="text-base font-semibold text-gray-900 mb-3">Atualizações</h1>
+            <div className="flex items-center gap-4">
+              <div className="relative">
+                <button
+                  onClick={() => setDigestDropdownOpen((v) => !v)}
+                  className="flex items-center gap-1.5 hover:opacity-60 transition-opacity cursor-pointer"
+                >
+                  <BookOpen className="w-3.5 h-3.5 text-gray-400" />
+                  <span className="text-xs text-gray-600">1 documento</span>
+                </button>
+                {digestDropdownOpen && (
+                  <div className="absolute top-full left-0 mt-2 bg-white border border-gray-100 rounded-xl shadow-lg z-50 w-80">
+                    <button
+                      onClick={() => { setDigestDropdownOpen(false); onShowDigest() }}
+                      className="w-full flex items-start gap-3 px-4 py-3.5 hover:bg-gray-50 text-left cursor-pointer transition-colors"
+                    >
+                      <BookOpen className="w-3.5 h-3.5 flex-shrink-0 mt-0.5 text-gray-300" />
+                      <span className="text-sm text-gray-700 leading-snug">Atualizações</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="flex-1 flex flex-col px-4 overflow-y-auto pt-6">
         <div className="max-w-2xl mx-auto w-full space-y-6">
           {messages.map((msg, index) => {
-            if (msg.role === "assistant" && msg.contextType === "daily-updates") {
+            if (msg.role === "assistant" && msg.contextType === "digest-artifact") {
               return (
                 <div key={index} className="w-full">
-                  <DailyUpdatesArtifact />
+                  <div className="flex items-start gap-2">
+                    <MIcon />
+                    <button
+                      onClick={onShowDigest}
+                      className="border border-gray-100 rounded-xl px-4 py-3 max-w-md bg-white text-left hover:bg-gray-50 transition-colors cursor-pointer w-full"
+                    >
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-6 h-6 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
+                          <BookOpen className="w-3 h-3 text-gray-400" />
+                        </div>
+                        <p className="text-sm font-medium text-gray-900">Atualizações</p>
+                      </div>
+                      <p className="text-xs text-gray-400 leading-relaxed">Direito tributário federal · hoje</p>
+                    </button>
+                  </div>
                 </div>
               )
             }
@@ -1131,7 +1146,7 @@ export function ChatArea({
             if (msg.role === "assistant" && msg.contextType === "pesquisa-result" && msg.pesquisaResult) {
               return (
                 <div key={index} className="w-full">
-                  <PesquisaResultBubble expandedQuery={msg.pesquisaResult.expandedQuery} />
+                  <PesquisaResultBubble expandedQuery={msg.pesquisaResult.expandedQuery} onViewPesquisa={onViewPesquisa} />
                 </div>
               )
             }
@@ -1161,7 +1176,6 @@ export function ChatArea({
               )
             }
 
-            const isDigestTrigger = msg.role === "user" && msg.content === DIGEST_USER_MSG
             const isMonitoringTrigger =
               msg.role === "user" &&
               index + 1 < messages.length &&
@@ -1174,14 +1188,7 @@ export function ChatArea({
             return (
               <div key={index} className="space-y-3">
                 <div className={`flex items-start gap-2 ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
-                  {isDigestTrigger ? (
-                    <div className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-full bg-white">
-                      <Zap className="w-3.5 h-3.5 text-blue-500" />
-                      <span className="text-xs text-gray-500">
-                        {TOTAL_UPDATES} atualizações nas últimas 24h
-                      </span>
-                    </div>
-                  ) : isMonitoringTrigger || isPesquisaTrigger ? (
+                  {isMonitoringTrigger || isPesquisaTrigger ? (
                     <>
                       <div className="px-4 py-2 border border-gray-200 rounded-full bg-white text-sm text-gray-700">
                         {msg.content}
@@ -1207,7 +1214,7 @@ export function ChatArea({
         </div>
       </div>
 
-      {!isShowingArtifact && !isShowingMonitoringProposal && !isShowingPesquisaProposal && (
+      {!isShowingMonitoringProposal && !isShowingPesquisaProposal && (
         <>
           <div className="px-4 pb-3 pt-2">
             <div className="max-w-2xl mx-auto">
