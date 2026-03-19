@@ -267,7 +267,7 @@ export function Sidebar({
             />
           </div>
           <div className="flex flex-col">
-            <span className="text-sm font-medium text-gray-900">Rodrigo Salvador</span>
+            <span className="text-sm font-medium text-gray-900">Rodrigo A. Salvador</span>
             <span className="text-xs text-gray-500">rodsalva@gmail.com</span>
           </div>
         </div>
