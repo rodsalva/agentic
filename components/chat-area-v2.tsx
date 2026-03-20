@@ -43,7 +43,7 @@ const PESQUISA_SUGGESTIONS = [
   "Atualizações sobre PIS/COFINS e insumos",
   "Impacto da reforma tributária no IRPJ",
   "Jurisprudência sobre JCP e dedutibilidade",
-  "Transfer pricing: novidades da Receita Federal",
+  "Transfer pricing: atualizações da Receita Federal",
 ]
 
 const MONITORAMENTO_SUGGESTIONS: Array<{
@@ -285,15 +285,18 @@ function PesquisaResultBubble({
           <MIcon />
           <button
             onClick={() => onViewPesquisa({ id: `p-${Date.now()}`, title, expandedQuery, content, timestamp: "agora" })}
-            className="border border-gray-100 rounded-xl px-4 py-3 max-w-md bg-white text-left hover:bg-gray-50 transition-colors cursor-pointer"
+            className="border border-gray-100 rounded-xl px-4 py-3.5 max-w-md bg-white text-left hover:bg-gray-50 transition-colors cursor-pointer"
           >
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-6 h-6 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
-                <BookOpen className="w-3 h-3 text-gray-400" />
+            <div className="flex items-start gap-3">
+              <div className="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
+                <BookOpen className="w-[18px] h-[18px] text-gray-500" />
               </div>
-              <p className="text-sm font-medium text-gray-900 flex-1 min-w-0 truncate">{title}</p>
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wide mb-0.5">Pesquisa</p>
+                <p className="text-sm font-medium text-gray-900 truncate">{title}</p>
+                <p className="text-xs text-gray-400 leading-relaxed line-clamp-2 mt-1">{expandedQuery}</p>
+              </div>
             </div>
-            <p className="text-xs text-gray-400 leading-relaxed line-clamp-2">{expandedQuery}</p>
           </button>
         </div>
       )}
@@ -391,7 +394,7 @@ function MonitoringProposalBubble({
           <span className="text-sm font-semibold text-gray-900">Monitoramento ativado</span>
         </div>
         <p className="text-xs text-gray-500 mb-4 pl-7">
-          Você será notificado quando houver novidades.
+          Você será notificado quando houver atualizações.
         </p>
 
         {/* Monitoring details */}
@@ -1155,13 +1158,16 @@ export function ChatArea({
                     <MIcon />
                     <button
                       onClick={onShowDigest}
-                      className="border border-gray-100 rounded-xl px-4 py-3 max-w-md bg-white text-left hover:bg-gray-50 transition-colors cursor-pointer w-full"
+                      className="border border-gray-100 rounded-xl px-4 py-3.5 max-w-md bg-white text-left hover:bg-gray-50 transition-colors cursor-pointer w-full"
                     >
-                      <div className="flex items-center gap-2 mb-2">
-                        <div className="w-6 h-6 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
-                          <BookOpen className="w-3 h-3 text-gray-400" />
+                      <div className="flex items-start gap-3">
+                        <div className="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
+                          <BookOpen className="w-[18px] h-[18px] text-gray-500" />
                         </div>
-                        <p className="text-sm font-medium text-gray-900">Atualizações</p>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wide mb-0.5">Pesquisa</p>
+                          <p className="text-sm font-medium text-gray-900">Atualizações</p>
+                        </div>
                       </div>
                       <p className="text-xs text-gray-400 leading-relaxed">Direito tributário federal</p>
                     </button>

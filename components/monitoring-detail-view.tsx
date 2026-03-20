@@ -196,7 +196,7 @@ export function MonitoringDetailView({ monitoring, onBack, onTogglePause }: Moni
               <p className="text-xs text-gray-400 mt-0.5">
                 {monitoring.status === "paused"
                   ? "Pausado"
-                  : `Verificado ${monitoring.lastChecked}${monitoring.newCount > 0 ? ` · ${monitoring.newCount} ${monitoring.newCount === 1 ? "novidade" : "atualizações"}` : ""}`
+                  : `Verificado ${monitoring.lastChecked}${monitoring.newCount > 0 ? ` · ${monitoring.newCount} ${monitoring.newCount === 1 ? "atualização" : "atualizações"}` : ""}`
                 }
               </p>
             </div>

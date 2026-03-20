@@ -40,7 +40,7 @@ export function MonitoringAlertCard({ alert, onView, onDismiss }: MonitoringAler
         <p className="text-sm font-medium text-gray-900 truncate">{alert.name}</p>
         <p className="text-xs text-gray-500">
           <span className={cn("font-medium", alert.isNew && "text-amber-600")}>
-            {alert.newCount} {alert.newCount === 1 ? "novidade" : "atualizações "}
+            {alert.newCount} {alert.newCount === 1 ? "atualização" : "atualizações"}
           </span>
           <span className="mx-1.5 text-gray-300">·</span>
           <span>{alert.lastUpdate}</span>
