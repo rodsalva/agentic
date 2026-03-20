@@ -346,7 +346,7 @@ export function MonitoringArtifact({
             </div>
             {newCount > 0 && (
               <span className="px-2.5 py-1 bg-amber-100 text-amber-700 text-xs font-semibold rounded-lg">
-                {newCount} {newCount === 1 ? "novidade" : "atualizações "}
+                {newCount} {newCount === 1 ? "atualização" : "atualizações"}
               </span>
             )}
           </div>

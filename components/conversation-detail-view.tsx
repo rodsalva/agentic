@@ -140,15 +140,18 @@ function PesquisaResultDisplay({ pesquisa, onViewPesquisa }: { pesquisa: Pesquis
     <div className="flex-1 min-w-0">
       <button
         onClick={() => onViewPesquisa(pesquisa)}
-        className="border border-gray-100 rounded-xl px-4 py-3 max-w-md bg-white text-left hover:bg-gray-50 transition-colors cursor-pointer w-full"
+        className="border border-gray-100 rounded-xl px-4 py-3.5 max-w-md bg-white text-left hover:bg-gray-50 transition-colors cursor-pointer w-full"
       >
-        <div className="flex items-center gap-2 mb-2">
-          <div className="w-6 h-6 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
-            <BookOpen className="w-3 h-3 text-gray-400" />
+        <div className="flex items-start gap-3">
+          <div className="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
+            <BookOpen className="w-[18px] h-[18px] text-gray-500" />
           </div>
-          <p className="text-sm font-medium text-gray-900 flex-1 min-w-0 truncate">{pesquisa.title}</p>
+          <div className="flex-1 min-w-0">
+            <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wide mb-0.5">Pesquisa</p>
+            <p className="text-sm font-medium text-gray-900 truncate">{pesquisa.title}</p>
+            <p className="text-xs text-gray-400 leading-relaxed line-clamp-2 mt-1">{pesquisa.expandedQuery}</p>
+          </div>
         </div>
-        <p className="text-xs text-gray-400 leading-relaxed line-clamp-2">{pesquisa.expandedQuery}</p>
       </button>
     </div>
   )
@@ -166,42 +169,32 @@ function MonitoramentoRow({
   return (
     <button
       onClick={onClick}
-      className={cn(
-        "w-full flex items-center gap-3 px-4 py-3.5 rounded-xl border transition-all text-left cursor-pointer hover:shadow-sm",
-        mon.hasNew
-          ? "border-amber-200 bg-amber-50/40 hover:bg-amber-50"
-          : "border-gray-100 hover:bg-gray-50"
-      )}
+      className="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl border border-gray-100 transition-all text-left cursor-pointer hover:shadow-sm hover:bg-gray-50"
     >
       {/* Icon */}
-      <div className={cn(
-        "w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0",
-        mon.hasNew ? "bg-amber-100" : "bg-gray-100"
-      )}>
-        <Bell className={cn("w-3.5 h-3.5", mon.hasNew ? "text-amber-500" : "text-gray-400")} />
+      <div className="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
+        <Bell className="w-[18px] h-[18px] text-gray-500" />
       </div>
 
       {/* Info */}
       <div className="flex-1 min-w-0">
+        <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wide mb-0.5">Monitoramento</p>
         <div className="flex items-center gap-2">
-          <p className={cn(
-            "text-sm truncate",
-            mon.hasNew ? "font-semibold text-gray-900" : "font-medium text-gray-700"
-          )}>
-            {mon.name}
+          <p className="text-sm font-medium text-gray-900 truncate">{mon.name}</p>
+        </div>
+        <div className="flex items-center gap-2 mt-1">
+          <p className="text-[11px] text-gray-400">
+            {mon.hasNew
+              ? `Verificado ${mon.lastChecked}`
+              : `Verificado ${mon.lastChecked} · sem atualizações`
+            }
           </p>
           {mon.hasNew && (
-            <span className="flex-shrink-0 inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-amber-400 text-white text-[9px] font-bold leading-none">
-              {mon.newCount}
+            <span className="flex-shrink-0 inline-flex items-center px-1.5 py-0.5 rounded-md bg-amber-100 text-amber-700 text-[10px] font-medium leading-none">
+              {mon.newCount} {mon.newCount === 1 ? "atualização" : "atualizações"}
             </span>
           )}
         </div>
-        <p className="text-[11px] text-gray-400 mt-0.5">
-          {mon.hasNew
-            ? `${mon.newCount} ${mon.newCount === 1 ? "novidade" : "novidades"} · verificado ${mon.lastChecked}`
-            : `Verificado ${mon.lastChecked} · sem novidades`
-          }
-        </p>
       </div>
 
       {/* Arrow */}
@@ -232,17 +225,27 @@ function MonitoringProposalCard({ monitoring, onClick }: { monitoring: Monitorin
   return (
     <button
       onClick={onClick}
-      className="border border-amber-100 rounded-xl px-4 py-3 max-w-md bg-amber-50/20 text-left hover:bg-amber-50/50 transition-colors cursor-pointer w-full"
+      className="border border-gray-100 rounded-xl px-4 py-3.5 max-w-md bg-white text-left hover:bg-gray-50 transition-colors cursor-pointer w-full"
     >
-      <div className="flex items-center gap-2 mb-2">
-        <div className="w-6 h-6 rounded-lg bg-amber-100 flex items-center justify-center flex-shrink-0">
-          <Bell className="w-3 h-3 text-amber-500" />
+      <div className="flex items-start gap-3">
+        <div className="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
+          <Bell className="w-[18px] h-[18px] text-gray-500" />
         </div>
-        <p className="text-sm font-medium text-gray-900 flex-1 min-w-0 truncate">{monitoring.name}</p>
+        <div className="flex-1 min-w-0">
+          <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wide mb-0.5">Monitoramento</p>
+          <p className="text-sm font-medium text-gray-900 truncate">{monitoring.name}</p>
+          <div className="flex items-center gap-2 mt-1">
+            <p className="text-xs text-gray-400 leading-relaxed truncate">
+              {monitoring.scope.sources.map((s) => s.toUpperCase()).join(", ")} · {monitoring.scope.tributos.join(", ")} · {monitoring.scope.assuntos.join(", ")}
+            </p>
+            {monitoring.hasNew && (
+              <span className="flex-shrink-0 inline-flex items-center px-1.5 py-0.5 rounded-md bg-amber-100 text-amber-700 text-[10px] font-medium leading-none">
+                {monitoring.newCount} {monitoring.newCount === 1 ? "atualização" : "atualizações"}
+              </span>
+            )}
+          </div>
+        </div>
       </div>
-      <p className="text-xs text-gray-400 leading-relaxed">
-        {monitoring.scope.sources.map((s) => s.toUpperCase()).join(", ")} · {monitoring.scope.tributos.join(", ")} · {monitoring.scope.assuntos.join(", ")}
-      </p>
     </button>
   )
 }
@@ -434,7 +437,7 @@ export function ConversationDetailView({ conversationId, onBack, onViewMonitorin
                   </span>
                   {totalNewMonitoramentoItems > 0 && (
                     <span className="inline-flex items-center justify-center min-w-[16px] h-4 px-1 rounded-full bg-amber-100 text-amber-600 text-[9px] font-bold">
-                      {totalNewMonitoramentoItems} {totalNewMonitoramentoItems === 1 ? "novidade" : "novidades"}
+                      {totalNewMonitoramentoItems} {totalNewMonitoramentoItems === 1 ? "atualização" : "atualizações"}
                     </span>
                   )}
                 </button>

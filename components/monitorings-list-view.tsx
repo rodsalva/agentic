@@ -46,7 +46,7 @@ function MonitoringRow({
               {monitoring.status === "paused"
                 ? "Pausado"
                 : monitoring.hasNew
-                  ? `${monitoring.newCount} ${monitoring.newCount === 1 ? "novidade" : "novidades"} · verificado ${monitoring.lastChecked}`
+                  ? `${monitoring.newCount} ${monitoring.newCount === 1 ? "atualização" : "atualizações"} · verificado ${monitoring.lastChecked}`
                   : `Verificado ${monitoring.lastChecked}`
               }
             </p>

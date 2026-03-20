@@ -79,7 +79,7 @@ const PESQUISA_SUGGESTIONS = [
   "Atualizações sobre PIS/COFINS e insumos",
   "Impacto da reforma tributária no IRPJ",
   "Jurisprudência sobre JCP e dedutibilidade",
-  "Transfer pricing: novidades da Receita Federal",
+  "Transfer pricing: atualizações da Receita Federal",
 ]
 
 const MONITORAMENTO_SUGGESTIONS: Array<{
@@ -203,7 +203,7 @@ function MonitoringProposalBubble({
           <span className="text-sm font-semibold text-gray-900">Monitoramento ativado</span>
         </div>
         <p className="text-xs text-gray-500 mb-4 pl-7">
-          Você será notificado quando houver novidades.
+          Você será notificado quando houver atualizações.
         </p>
 
         {/* Monitoring details */}
