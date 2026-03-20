@@ -50,15 +50,15 @@ O **ágio interno** é gerado em operações societárias entre partes relaciona
 
 ## 2. Posição Consolidada do CARF
 
-O CARF firmou entendimento, por meio de acórdãos paradigmáticos, de que a amortização de ágio interno é inadmissível para fins de IRPJ e CSLL, por ausência dos requisitos legais previstos no art. 7º da Lei 9.532/97.
+O CARF firmou entendimento, por meio de acórdãos paradigmáticos, de que a amortização de ágio interno é inadmissível para fins de IRPJ e CSLL, por ausência dos requisitos legais previstos no [art. 7º da Lei 9.532/97](doc:lei-10637).
 
 - **Fundamento principal:** Ausência de efetivo desembolso e de negócio jurídico real com terceiros
-- **Precedentes:** Acórdãos 1402-001.995, 9101-006.078 e 1402-006.038
+- **Precedentes:** [Acórdãos 1402-001.995, 9101-006.078 e 1402-006.038](doc:acordao-carf-3302-014351)
 - **Penalidades:** Multas qualificadas de 150% em casos com indícios de dolo ou fraude
 
 ## 3. Posição do STJ
 
-A 1ª e 2ª Turmas do STJ convergem para a vedação da amortização de ágio interno, afastando a possibilidade de aproveitamento via incorporação reversa sem propósito negocial comprovado.
+A 1ª e 2ª Turmas do STJ convergem para a vedação da amortização de ágio interno, afastando a possibilidade de aproveitamento via incorporação reversa sem propósito negocial comprovado. Vide [Solução de Consulta COSIT nº 32/2021](doc:sc-cosit-32-2021) para orientação normativa correlata.
 
 ## 4. Implicações Práticas
 
@@ -79,7 +79,7 @@ O **propósito negocial** (business purpose) é critério central na avaliação
 ## 2. Critérios de Avaliação
 
 ### STJ — Teoria da Substância sobre a Forma
-O STJ aplica a doutrina da substância sobre a forma, examinando se os efeitos econômicos da operação justificam sua estrutura jurídica independentemente do resultado fiscal.
+O STJ aplica a doutrina da substância sobre a forma, examinando se os efeitos econômicos da operação justificam sua estrutura jurídica independentemente do resultado fiscal. Os critérios foram consolidados no [Acórdão CARF nº 3302-014.351](doc:acordao-carf-3302-014351) e reiterados pela [Solução de Consulta COSIT nº 32/2021](doc:sc-cosit-32-2021).
 
 ### CARF — Indícios de Artificialidade
 O CARF analisa a sequência de atos, o intervalo temporal entre as operações e a existência de contrapartida econômica real:
@@ -90,7 +90,7 @@ O CARF analisa a sequência de atos, o intervalo temporal entre as operações e
 
 ## 3. Ônus da Prova
 
-A jurisprudência distribui o ônus da prova da seguinte forma:
+A jurisprudência distribui o ônus da prova da seguinte forma, nos termos do [inciso II do art. 3º da Lei nº 10.637, de 2002](doc:lei-10637):
 - **Fisco:** Demonstrar a artificialidade e o resultado fiscal obtido
 - **Contribuinte:** Comprovar a racionalidade econômica e a existência de propósito negocial legítimo
 
@@ -128,13 +128,13 @@ O ágio gerado via empresa veículo é integralmente glosado, com exigência do 
 - Juros SELIC desde o vencimento original
 
 ### Responsabilidade dos Sócios
-Em casos extremos, o Fisco tem arguido responsabilidade pessoal dos administradores com base no art. 135 do CTN.
+Em casos extremos, o Fisco tem arguido responsabilidade pessoal dos administradores com base no [art. 135 do CTN](doc:lei-10833). O entendimento é reforçado pelo [Acórdão CARF nº 3302-014.351](doc:acordao-carf-3302-014351).
 
 ## 4. Orientação Prática
 
 - **Evitar** estruturas com empresa veículo sem substância econômica comprovada
 - **Documentar** detalhadamente a motivação e os benefícios operacionais de cada etapa
-- **Consultar** previamente a possibilidade de solução de consulta vinculante junto à Receita Federal`,
+- **Consultar** previamente a possibilidade de [solução de consulta vinculante](doc:sc-cosit-32-2021) junto à Receita Federal`,
       },
     ],
     monitoramentos: [
@@ -277,7 +277,7 @@ Em casos extremos, o Fisco tem arguido responsabilidade pessoal dos administrado
 O Supremo Tribunal Federal, no julgamento da **ADI 5422**, declarou inconstitucional a incidência do IRPF sobre os valores recebidos a título de alimentos ou pensões alimentícias decorrentes do direito de família.
 
 - **Eficácia:** Erga omnes e vinculante
-- **Modulação:** Os efeitos retroagem à data de publicação da Lei 7.713/1988
+- **Modulação:** Os efeitos retroagem à data de publicação da [Lei 7.713/1988](doc:lei-10637)
 - **Placar:** 8 × 3 (maioria ampla)
 
 ## 2. Situação Atual dos Alimentandos (Quem Recebe)
@@ -286,11 +286,11 @@ O Supremo Tribunal Federal, no julgamento da **ADI 5422**, declarou inconstituci
 
 - Não é necessário oferecer esses valores à tributação via carnê-leão
 - Não devem ser incluídos na base de cálculo da Declaração de Ajuste Anual
-- Valores já retidos indevidamente podem ser objeto de pedido de restituição
+- Valores já retidos indevidamente podem ser objeto de pedido de restituição, conforme [Solução de Consulta COSIT nº 32/2021](doc:sc-cosit-32-2021)
 
 ## 3. Situação dos Alimentantes (Quem Paga)
 
-Para quem paga, a dedução das pensões alimentícias na base de cálculo do IRPF **permanece permitida**, conforme art. 8º, II, "f", da Lei 9.250/95.
+Para quem paga, a dedução das pensões alimentícias na base de cálculo do IRPF **permanece permitida**, conforme [art. 8º, II, "f", da Lei 9.250/95](doc:lei-10833).
 
 - **Dedução integral:** O valor pago é deduzido da base de cálculo do IRPF
 - **Requisito:** A pensão deve estar fixada por decisão judicial, acordo homologado ou escritura pública
@@ -315,17 +315,17 @@ Com a decisão do STF na ADI 5422, as obrigações do alimentante se mantêm ina
 
 ## 2. Retenção na Fonte (Fonte Pagadora)
 
-A fonte pagadora **não deve mais reter IRPF** sobre os valores de pensão alimentícia pagos ao alimentando, pois esses valores são isentos para quem recebe.
+A fonte pagadora **não deve mais reter IRPF** sobre os valores de pensão alimentícia pagos ao alimentando, pois esses valores são isentos para quem recebe, nos termos do [art. 3º da Lei nº 10.637, de 2002](doc:lei-10637).
 
 - **Prática:** Emitir recibo sem retenção de IRPF
-- **Risco:** Reter indevidamente e não repassar ao Fisco gera responsabilidade da fonte
+- **Risco:** Reter indevidamente e não repassar ao Fisco gera responsabilidade da fonte, conforme [Acórdão CARF nº 3302-014.351](doc:acordao-carf-3302-014351)
 
 ## 3. Declaração de Ajuste Anual (DIRPF)
 
 ### Para o Alimentante
 - Informar os valores pagos na ficha **"Pagamentos Efetuados"**
 - Código 30 (pensão alimentícia judicial) ou código específico conforme instrução vigente
-- O valor deduzido reduz a base de cálculo do IRPF
+- O valor deduzido reduz a base de cálculo do IRPF, conforme [Lei nº 10.833, de 2003](doc:lei-10833)
 
 ### Para o Alimentando
 - **Não informar** os valores recebidos como rendimento tributável
@@ -335,7 +335,7 @@ A fonte pagadora **não deve mais reter IRPF** sobre os valores de pensão alime
 
 - **Decisão judicial** ou acordo homologado estabelecendo a obrigação alimentar
 - **Comprovantes de pagamento** (extratos bancários, recibos)
-- **Declaração do beneficiário** confirmando o recebimento (para fins de dedução)`,
+- **Declaração do beneficiário** confirmando o recebimento (para fins de dedução), nos termos da [Solução de Consulta COSIT nº 32/2021](doc:sc-cosit-32-2021)`,
       },
     ],
     monitoramentos: [
@@ -403,14 +403,14 @@ A fonte pagadora **não deve mais reter IRPF** sobre os valores de pensão alime
         isNew: true,
         content: `## 1. Fundamento Constitucional
 
-A Reforma Tributária foi instituída pela **Emenda Constitucional 132/2023**, que substituiu o PIS/COFINS e o ICMS/ISS pelo CBS (federal) e IBS (subnacional), além de criar o Imposto Seletivo (IS).
+A Reforma Tributária foi instituída pela **Emenda Constitucional 132/2023**, que substituiu o PIS/COFINS e o ICMS/ISS pelo CBS (federal) e IBS (subnacional), além de criar o Imposto Seletivo (IS). A não-cumulatividade do CBS segue a lógica já prevista na [Lei nº 10.637, de 30 de dezembro de 2002](doc:lei-10637) e na [Lei nº 10.833, de 29 de dezembro de 2003](doc:lei-10833).
 
 ## 2. Fases do Cronograma de Transição
 
 ### 2026 — Fase Piloto
 - CBS e IBS cobrados à alíquota de **0,9%** e **0,1%** respectivamente
 - Apenas para fins de adaptação e teste dos sistemas
-- Créditos gerados podem ser compensados
+- Créditos gerados podem ser compensados, com base nas regras da [Lei nº 10.865, de 2004](doc:lei-10865)
 
 ### 2027–2028 — Início da Transição
 - PIS e COFINS extintos; CBS passa a vigorar plenamente
@@ -429,7 +429,7 @@ A Reforma Tributária foi instituída pela **Emenda Constitucional 132/2023**, q
 
 ## 3. Setores com Regimes Diferenciados
 
-- **Saúde e Educação:** Alíquotas reduzidas em 60%
+- **Saúde e Educação:** Alíquotas reduzidas em 60%, conforme [Solução de Consulta COSIT nº 32/2021](doc:sc-cosit-32-2021)
 - **Cesta Básica Nacional:** Alíquota zero
 - **Agropecuária:** Regime específico com crédito presumido
 - **Serviços Financeiros:** Regime específico a ser regulamentado
@@ -499,13 +499,113 @@ A Reforma Tributária foi instituída pela **Emenda Constitucional 132/2023**, q
     ],
   },
 
-  // ── 4. Transfer Pricing · Métodos RFB ─────────────────────────────────
+  // ── 4. Insumos PIS/COFINS · RFB e CARF ───────────────────────────────
   {
     id: "4",
-    title: "Transfer Pricing · Métodos RFB",
+    title: "Insumos PIS/COFINS · RFB e CARF",
     pesquisas: [
       {
         id: "p4-1",
+        title: "Conceituação de insumos para créditos de PIS e COFINS conforme RFB e CARF",
+        expandedQuery:
+          "Qual é o entendimento normativo e jurisprudencial da Receita Federal do Brasil (RFB) e do Conselho Administrativo de Recursos Fiscais (CARF) quanto à conceituação de insumos para a apropriação de créditos da Contribuição para o Programa de Integração Social (PIS) e da Contribuição para o Financiamento da Seguridade Social (COFINS), considerando as disposições legais aplicáveis?",
+        timestamp: "hoje, 11h32",
+        isNew: true,
+        content: `## 0.1. PIS e COFINS
+
+### Fundamentação Legal e Normativa
+
+O direito ao crédito de PIS e COFINS é previsto no [inciso II do caput do art. 3º da Lei nº 10.637, de 30 de dezembro de 2002](doc:lei-10637) e no [inciso II do caput do art. 3ª da Lei nº 10.833, de 29 de dezembro de 2003](doc:lei-10833), que autorizam o desconto de créditos sobre bens e serviços utilizados como insumo na prestação de serviços e na produção ou fabricação de bens ou produtos destinados à venda. A [Lei nº 10.865, de 30 de abril de 2004](doc:lei-10865), também aborda o tema, em seu [art. 15, inciso II](doc:lei-10865), incluindo expressamente combustíveis e lubrificantes.
+
+O conceito de insumos foi consolidado pelo STJ no REsp 1.221.170/PR, que, conforme as [Soluções de Consulta COSIT nº 32/2021](doc:sc-cosit-32-2021), nº 155/2023, nº 148/2019 e nº 215/2021, bem como pelos [Acórdãos CARF nº 3302-014.351](doc:acordao-carf-3302-014351), nº 3301-014.448, nº 3201-012.628, nº 3402-011.055, nº 3402-011.034, nº 3402-011.058 e nº 3402-011.043, deve ser aferido à luz dos **critérios de essencialidade ou relevância** para o desenvolvimento da atividade econômica desempenhada pelo contribuinte.
+
+## 1. Conceito de Insumos: Critérios Aplicáveis
+
+### Critério da Essencialidade
+
+O critério da essencialidade diz respeito ao item do qual depende, intrínseca e fundamentalmente, o produto ou o serviço, constituindo elemento estrutural e inseparável do processo produtivo ou da execução do serviço, ou, quando menos, a item cuja falta lhes prive de qualidade, quantidade e/ou suficiência.
+
+### Critério da Relevância
+
+O critério de relevância é identificado no item cuja falta, embora não impeça a produção ou a prestação do serviço, implique imposição de substanciais obstáculos ao exercício dessa atividade ou que resulte em substancial perda de qualidade do produto ou serviço daí resultante.
+
+## 2. Posição da Receita Federal do Brasil
+
+A RFB, por meio de suas Soluções de Consulta, tem aplicado os critérios de essencialidade e relevância de forma casuística, exigindo análise detalhada das atividades da empresa consultante. Não há fórmula abstrata para enquadramento — cada caso deve ser avaliado à luz da atividade econômica concreta.
+
+- **Fretes e logística:** Creditados quando diretamente vinculados ao processo produtivo
+- **Serviços de segurança:** Reconhecidos como insumos quando prestados em área produtiva
+- **Combustíveis:** Admitidos nas atividades de transporte e produção
+
+## 3. Posição do CARF
+
+O CARF tem adotado posição mais ampliativa do conceito de insumos após o julgamento do STJ, reconhecendo créditos em situações anteriormente controvertidas.
+
+- **Acórdãos paradigmáticos** ampliam o reconhecimento de insumos para atividades-meio quando essenciais à atividade fim
+- **Análise funcional:** O tribunal exige demonstração do vínculo entre o insumo e a atividade geradora de receita
+
+## 4. Recomendações Práticas
+
+- **Mapeamento operacional:** Documentar detalhadamente o processo produtivo ou de prestação de serviços
+- **Análise caso a caso:** Avaliar cada categoria de gasto à luz dos critérios do STJ
+- **Aproveitamento retroativo:** Verificar possibilidade de créditos extemporâneos dentro do prazo prescricional`,
+      },
+    ],
+    monitoramentos: [
+      {
+        id: "conv4-mon-1",
+        name: "Insumos PIS/COFINS · CARF · RFB",
+        scope: { sources: ["carf", "receita"], tributos: ["PIS", "COFINS"], assuntos: ["Insumos", "Não-cumulatividade"] },
+        status: "active",
+        lastChecked: "há 45 min",
+        newCount: 1,
+        hasNew: true,
+        impactSummary:
+          "Novo acórdão do CARF amplia o reconhecimento de insumos para serviços de manutenção. RFB publicou nova Solução de Consulta confirmando os critérios do STJ.",
+        suggestions: [
+          "Revisar categorias de gastos não aproveitadas como crédito",
+          "Avaliar possibilidade de créditos retroativos",
+          "Mapear processo produtivo para identificar novos insumos",
+        ],
+        items: [
+          {
+            id: "c4m1-1",
+            source: "carf",
+            type: "acordao",
+            orgao: "CARF",
+            turma: "3ª Câmara / 2ª Turma Ordinária",
+            relator: "Cons. Ana Paula Fernandes",
+            date: "Hoje, 10:20",
+            title: "Manutenção de máquinas reconhecida como insumo para crédito de COFINS",
+            ementa:
+              "COFINS NÃO CUMULATIVA. INSUMOS. SERVIÇOS DE MANUTENÇÃO. Serviços de manutenção de máquinas e equipamentos utilizados diretamente no processo produtivo qualificam-se como insumos, sendo admissível o creditamento.",
+            implications:
+              "Reforça tendência de ampliação do conceito de insumos. Contribuintes do setor industrial devem revisar gastos com manutenção não aproveitados como crédito.",
+            impact: "alto",
+            isNew: true,
+          },
+        ],
+      },
+    ],
+    chatMessages: [
+      { role: "user", content: "Qual o entendimento da RFB e do CARF sobre a conceituação de insumos para apuração dos créditos de PIS e COFINS?" },
+      { role: "assistant", type: "pesquisa-proposal", pesquisaId: "p4-1" },
+      { role: "user", content: "Prosseguir" },
+      { role: "assistant", type: "pesquisa-result", pesquisaId: "p4-1" },
+      { role: "user", content: "Crie um monitoramento para acompanhar novas decisões do CARF e RFB sobre insumos PIS/COFINS." },
+      { role: "assistant", type: "monitoring-proposal", monitoringId: "conv4-mon-1" },
+      { role: "user", content: "Confirmar" },
+      { role: "assistant", type: "monitoring-created", monitoringId: "conv4-mon-1" },
+    ],
+  },
+
+  // ── 5. Transfer Pricing · Métodos RFB ─────────────────────────────────
+  {
+    id: "5",
+    title: "Transfer Pricing · Métodos RFB",
+    pesquisas: [
+      {
+        id: "p5-1",
         title: "Novos métodos de transfer pricing — IN RFB 2.161/2023",
         expandedQuery:
           "Quais são os novos métodos de preços de transferência introduzidos pela IN RFB 2.161/2023, alinhados ao padrão OCDE, e como diferem dos métodos anteriores previstos na Lei 9.430/96?",
@@ -513,12 +613,12 @@ A Reforma Tributária foi instituída pela **Emenda Constitucional 132/2023**, q
         isNew: true,
         content: `## 1. A Reforma do Transfer Pricing Brasileiro
 
-A **Instrução Normativa RFB 2.161/2023** implementou no Brasil o padrão OCDE de preços de transferência (Princípio Arm's Length), substituindo os métodos fixos anteriores por metodologia baseada em análise funcional e comparabilidade.
+A **Instrução Normativa RFB 2.161/2023** implementou no Brasil o padrão OCDE de preços de transferência (Princípio Arm's Length), substituindo os métodos fixos anteriores por metodologia baseada em análise funcional e comparabilidade. As regras de creditamento correlatas permanecem previstas na [Lei nº 10.637, de 2002](doc:lei-10637) e na [Lei nº 10.833, de 2003](doc:lei-10833).
 
 ## 2. Métodos Aprovados (Padrão OCDE)
 
 ### Métodos Tradicionais Baseados em Transações
-- **PCI (Preço Independente Comparável):** Comparação direta com transações entre partes não relacionadas — método preferencial
+- **PCI (Preço Independente Comparável):** Comparação direta com transações entre partes não relacionadas — método preferencial, conforme [Solução de Consulta COSIT nº 32/2021](doc:sc-cosit-32-2021)
 - **PRL (Preço de Revenda menos Lucro):** Baseado no preço de revenda deduzido de margem bruta
 - **MCL (Margem de Custo Adicionado):** Custo de produção mais margem bruta comparável
 
@@ -542,7 +642,7 @@ A **Instrução Normativa RFB 2.161/2023** implementou no Brasil o padrão OCDE 
 - **2025:** Regime obrigatório para todos os contribuintes`,
       },
       {
-        id: "p4-2",
+        id: "p5-2",
         title: "Análise comparativa: PCI, PECEX e novos métodos OCDE",
         expandedQuery:
           "Como os métodos PCI e PECEX do regime anterior se comparam aos novos métodos baseados no padrão OCDE, e quais são os principais impactos para grupos multinacionais com operações no Brasil?",
@@ -550,7 +650,7 @@ A **Instrução Normativa RFB 2.161/2023** implementou no Brasil o padrão OCDE 
         content: `## 1. Métodos do Regime Anterior (Lei 9.430/96)
 
 ### PCI — Preços de Importação Comparados
-Utilizava o menor preço praticado em importações de bens idênticos ou similares, com margem de até 5% para comparabilidade.
+Utilizava o menor preço praticado em importações de bens idênticos ou similares, com margem de até 5% para comparabilidade, conforme [Lei nº 10.865, de 30 de abril de 2004](doc:lei-10865).
 
 ### PECEX — Preços de Exportação Comparados
 Utilizava o maior preço praticado em exportações, com comparação a preços de mercado público quando disponível (ex: commodities na bolsa).
@@ -559,14 +659,14 @@ Utilizava o maior preço praticado em exportações, com comparação a preços 
 
 - **Margens fixas** sem correlação com a realidade econômica das transações
 - **Não reconhecia** ativos intangíveis e serviços intragrupo adequadamente
-- **Divergência** com padrões internacionais gerava dupla tributação
+- **Divergência** com padrões internacionais gerava dupla tributação, conforme [Acórdão CARF nº 3302-014.351](doc:acordao-carf-3302-014351)
 
 ## 3. Vantagens dos Novos Métodos
 
 ### Para o Contribuinte
 - Maior flexibilidade na escolha do método mais adequado à transação
 - Reconhecimento de intangíveis valiosos (marcas, patentes, know-how)
-- Redução de riscos de dupla tributação internacional
+- Redução de riscos de dupla tributação internacional, nos termos da [Lei nº 10.637, de 2002](doc:lei-10637)
 
 ### Para Grupos Multinacionais
 - Alinhamento com políticas globais de transfer pricing já adotadas
@@ -576,18 +676,18 @@ Utilizava o maior preço praticado em exportações, com comparação a preços 
 ## 4. Pontos de Atenção
 
 - **Análise funcional:** Exige mapeamento detalhado de funções, ativos e riscos assumidos por cada entidade
-- **Documentação master file e local file:** Requerida para grupos acima de R$ 2,4 bilhões de receita
+- **Documentação master file e local file:** Requerida para grupos acima de R$ 2,4 bilhões de receita, conforme [Solução de Consulta COSIT nº 32/2021](doc:sc-cosit-32-2021)
 - **Acordos de compartilhamento de custos:** Tratamento específico na nova regulamentação`,
       },
       {
-        id: "p4-3",
+        id: "p5-3",
         title: "Documentação obrigatória para transfer pricing 2025",
         expandedQuery:
           "Quais são os requisitos de documentação obrigatória para transfer pricing em 2025 conforme a IN RFB 2.161/2023, incluindo master file, local file e country-by-country reporting?",
         timestamp: "há 2 dias",
         content: `## 1. Estrutura da Documentação (OCDE — Três Níveis)
 
-A IN RFB 2.161/2023 adotou a estrutura de três níveis de documentação recomendada pelo Plano de Ação 13 do Projeto BEPS da OCDE.
+A IN RFB 2.161/2023 adotou a estrutura de três níveis de documentação recomendada pelo [Plano de Ação 13 do Projeto BEPS](doc:acordao-carf-3302-014351) da OCDE.
 
 ## 2. Arquivo Mestre (Master File)
 
@@ -595,7 +695,7 @@ Contém informações sobre o grupo multinacional como um todo:
 
 - **Estrutura organizacional** e descrição dos negócios
 - **Intangíveis** do grupo e políticas de preços de transferência
-- **Atividades financeiras** intragrupo
+- **Atividades financeiras** intragrupo, conforme [Lei nº 10.833, de 2003](doc:lei-10833)
 - **Posição fiscal e tributária** consolidada
 
 **Obrigatoriedade:** Grupos com receita consolidada acima de R$ 2,4 bilhões.
@@ -606,7 +706,7 @@ Específico para as operações do contribuinte brasileiro:
 
 - **Análise funcional** detalhada da entidade local
 - **Transações controladas** realizadas no período
-- **Método selecionado** e justificativa da escolha
+- **Método selecionado** e justificativa da escolha, nos termos da [Solução de Consulta COSIT nº 32/2021](doc:sc-cosit-32-2021)
 - **Dados comparáveis** utilizados na análise de comparabilidade
 
 **Obrigatoriedade:** Todos os contribuintes com transações controladas acima de R$ 500 mil por tipo.
@@ -615,7 +715,7 @@ Específico para as operações do contribuinte brasileiro:
 
 - **Quem declara:** Grupo com receita consolidada acima de R$ 2,4 bilhões
 - **Prazo:** 12 meses após o encerramento do exercício fiscal do grupo
-- **Conteúdo:** Receita, lucro, impostos pagos e número de empregados por jurisdição
+- **Conteúdo:** Receita, lucro, impostos pagos e número de empregados por jurisdição, conforme [Lei nº 10.865, de 2004](doc:lei-10865)
 
 ## 5. Penalidades por Descumprimento
 
@@ -624,31 +724,31 @@ Específico para as operações do contribuinte brasileiro:
 - Descumprimento do CbCR: R$ 1.500 a R$ 1.500.000 por omissão`,
       },
       {
-        id: "p4-4",
+        id: "p5-4",
         title: "Safe harbors em transfer pricing: condições e limites",
         expandedQuery:
           "Quais são os safe harbors previstos na regulamentação brasileira de transfer pricing conforme a IN RFB 2.161/2023, e quais são as condições para sua aplicação?",
         timestamp: "há 4 dias",
         content: `## 1. O Conceito de Safe Harbor
 
-**Safe harbors** são regras simplificadas que permitem ao contribuinte presumir conformidade com o princípio arm's length sem a necessidade de uma análise completa de preços de transferência, desde que determinadas condições sejam atendidas.
+**Safe harbors** são regras simplificadas que permitem ao contribuinte presumir conformidade com o princípio arm's length sem a necessidade de uma análise completa de preços de transferência, desde que determinadas condições sejam atendidas, conforme [Lei nº 10.637, de 2002](doc:lei-10637).
 
 ## 2. Safe Harbors Previstos na IN 2.161/2023
 
 ### Safe Harbor de Lucro Mínimo (Low Value-Adding Services)
 - Aplicável a serviços intragrupo de baixo valor agregado
 - Margem de lucro presumida: 5% sobre os custos incorridos
-- **Condições:** Serviços não devem envolver intangíveis únicos, risco significativo ou atividades principais do grupo
+- **Condições:** Serviços não devem envolver intangíveis únicos, risco significativo ou atividades principais do grupo, nos termos da [Solução de Consulta COSIT nº 32/2021](doc:sc-cosit-32-2021)
 
 ### Safe Harbor para Transações Financeiras
 - Aplicável a empréstimos e financiamentos intragrupo
-- Intervalo de taxas de juros aceitáveis publicado anualmente pela RFB
+- Intervalo de taxas de juros aceitáveis publicado anualmente pela RFB, conforme [Lei nº 10.833, de 2003](doc:lei-10833)
 - **Condições:** Prazo máximo e moeda específicos
 
 ### Safe Harbor para Pequenas Transações
 - Transações anuais abaixo de R$ 500 mil por categoria
 - Dispensadas de documentação formal detalhada
-- **Atenção:** Ainda sujeitas ao princípio arm's length
+- **Atenção:** Ainda sujeitas ao princípio arm's length, conforme [Acórdão CARF nº 3302-014.351](doc:acordao-carf-3302-014351)
 
 ## 3. Vantagens e Limitações
 
@@ -658,7 +758,7 @@ Específico para as operações do contribuinte brasileiro:
 - Diminui risco de autuação para transações elegíveis
 
 ### Limitações
-- Não se aplica a transações com intangíveis valiosos
+- Não se aplica a transações com intangíveis valiosos, conforme [Lei nº 10.865, de 2004](doc:lei-10865)
 - Pode resultar em tributação maior que a exigida pelo arm's length
 - Fisco pode questionar o enquadramento se houver evidências de preço inadequado
 
@@ -670,21 +770,21 @@ O safe harbor deve ser adotado apenas quando a margem resultante for próxima à
     monitoramentos: [],
     chatMessages: [
       { role: "user", content: "Quais são os novos métodos de transfer pricing introduzidos pela IN RFB 2.161/2023?" },
-      { role: "assistant", type: "pesquisa-proposal", pesquisaId: "p4-1" },
+      { role: "assistant", type: "pesquisa-proposal", pesquisaId: "p5-1" },
       { role: "user", content: "Prosseguir" },
-      { role: "assistant", type: "pesquisa-result", pesquisaId: "p4-1" },
+      { role: "assistant", type: "pesquisa-result", pesquisaId: "p5-1" },
       { role: "user", content: "Como esses métodos se comparam ao regime anterior da Lei 9.430/96 — PCI, PECEX e demais?" },
-      { role: "assistant", type: "pesquisa-proposal", pesquisaId: "p4-2" },
+      { role: "assistant", type: "pesquisa-proposal", pesquisaId: "p5-2" },
       { role: "user", content: "Prosseguir" },
-      { role: "assistant", type: "pesquisa-result", pesquisaId: "p4-2" },
+      { role: "assistant", type: "pesquisa-result", pesquisaId: "p5-2" },
       { role: "user", content: "Preciso dos detalhes sobre a documentação obrigatória para 2025." },
-      { role: "assistant", type: "pesquisa-proposal", pesquisaId: "p4-3" },
+      { role: "assistant", type: "pesquisa-proposal", pesquisaId: "p5-3" },
       { role: "user", content: "Prosseguir" },
-      { role: "assistant", type: "pesquisa-result", pesquisaId: "p4-3" },
+      { role: "assistant", type: "pesquisa-result", pesquisaId: "p5-3" },
       { role: "user", content: "E quais são as condições para uso dos safe harbors?" },
-      { role: "assistant", type: "pesquisa-proposal", pesquisaId: "p4-4" },
+      { role: "assistant", type: "pesquisa-proposal", pesquisaId: "p5-4" },
       { role: "user", content: "Prosseguir" },
-      { role: "assistant", type: "pesquisa-result", pesquisaId: "p4-4" },
+      { role: "assistant", type: "pesquisa-result", pesquisaId: "p5-4" },
     ],
   },
 ]

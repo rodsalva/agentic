@@ -11,6 +11,8 @@ import { MonitoringsListView } from "./monitorings-list-view"
 import { DocumentsListView } from "./documents-list-view"
 import { MOCK_MONITORINGS, type MonitoringSubscription } from "@/lib/monitoring-data"
 import { MOCK_CONVERSATIONS, type PesquisaData } from "@/lib/conversation-data"
+import { DocumentViewerPanel } from "./document-viewer-panel"
+import { findDocument } from "@/lib/document-data"
 
 export type InputMode = "default" | "pesquisar" | "monitorar"
 
@@ -27,6 +29,7 @@ export function ManorChat() {
   const [chatMonitoringCount, setChatMonitoringCount] = useState(0)
   const [hasChatMessages, setHasChatMessages] = useState(false)
   const [pendingDigestMessage, setPendingDigestMessage] = useState<string | null>(null)
+  const [selectedDocumentId, setSelectedDocumentId] = useState<string | null>(null)
 
   // Collect all monitorings from conversations so detail view works
   const allConversationMonitorings = MOCK_CONVERSATIONS.flatMap((c) => c.monitoramentos)
@@ -129,6 +132,15 @@ export function ManorChat() {
     setHasChatMessages(true)
   }, [])
 
+  const handleOpenDocument = useCallback((id: string) => {
+    setSelectedDocumentId(id)
+    setSidebarOpen(false)
+  }, [])
+
+  const handleCloseDocument = useCallback(() => {
+    setSelectedDocumentId(null)
+  }, [])
+
   const handleStartConversationFromDigest = useCallback((msg: string) => {
     setPendingDigestMessage(msg)
     setShowDigest(false)
@@ -140,6 +152,8 @@ export function ManorChat() {
     monitorings.find((m) => m.id === selectedMonitoringId) ??
     allConversationMonitorings.find((m) => m.id === selectedMonitoringId) ??
     null
+
+  const selectedDocument = selectedDocumentId ? findDocument(selectedDocumentId) ?? null : null
 
   return (
     <div className="flex h-screen bg-white">
@@ -163,47 +177,57 @@ export function ManorChat() {
         hasChatMessages={hasChatMessages}
       />
 
-      {showDocumentsList && !selectedPesquisa ? (
-        <DocumentsListView onViewPesquisa={handleSelectPesquisa} />
-      ) : showMonitoringsList && !selectedMonitoringId ? (
-        <MonitoringsListView
-          monitorings={monitorings}
-          onSelectMonitoring={handleSelectMonitoring}
-        />
-      ) : showDigest ? (
-        <DigestView onBack={handleBackToChat} onStartConversation={handleStartConversationFromDigest} />
-      ) : selectedPesquisa ? (
-        <PesquisaDetailView
-          pesquisa={selectedPesquisa}
-          onBack={handleBackFromPesquisa}
-        />
-      ) : selectedMonitoring ? (
-        <MonitoringDetailView
-          monitoring={selectedMonitoring}
-          onBack={selectedConversationId ? handleBackFromMonitoringToConversation : showMonitoringsList ? () => setSelectedMonitoringId(null) : handleBackToChat}
-          onTogglePause={handleTogglePause}
-        />
-      ) : selectedConversationId ? (
-        <ConversationDetailView
-          conversationId={selectedConversationId}
-          onBack={handleBackToChat}
-          onViewMonitoring={handleSelectMonitoring}
-          onViewPesquisa={handleSelectPesquisa}
-        />
-      ) : (
-        <ChatArea
-          monitorings={monitorings}
-          inputMode={inputMode}
-          onSetInputMode={setInputMode}
-          onViewMonitoring={handleSelectMonitoring}
-          onViewPesquisa={handleSelectPesquisa}
-          onShowDigest={handleShowDigest}
-          onAddMonitoring={handleAddMonitoring}
-          onCreateMonitoringFromChat={handleAddMonitoringFromChat}
-          onFirstMessage={handleFirstMessage}
-          digestInitialMessage={pendingDigestMessage ?? undefined}
-        />
-      )}
+      <div className="flex flex-1 min-w-0 h-full">
+        {showDocumentsList && !selectedPesquisa ? (
+          <DocumentsListView onViewPesquisa={handleSelectPesquisa} />
+        ) : showMonitoringsList && !selectedMonitoringId ? (
+          <MonitoringsListView
+            monitorings={monitorings}
+            onSelectMonitoring={handleSelectMonitoring}
+          />
+        ) : showDigest ? (
+          <DigestView onBack={handleBackToChat} onStartConversation={handleStartConversationFromDigest} />
+        ) : selectedPesquisa ? (
+          <PesquisaDetailView
+            pesquisa={selectedPesquisa}
+            onBack={handleBackFromPesquisa}
+            onOpenDocument={handleOpenDocument}
+          />
+        ) : selectedMonitoring ? (
+          <MonitoringDetailView
+            monitoring={selectedMonitoring}
+            onBack={selectedConversationId ? handleBackFromMonitoringToConversation : showMonitoringsList ? () => setSelectedMonitoringId(null) : handleBackToChat}
+            onTogglePause={handleTogglePause}
+          />
+        ) : selectedConversationId ? (
+          <ConversationDetailView
+            conversationId={selectedConversationId}
+            onBack={handleBackToChat}
+            onViewMonitoring={handleSelectMonitoring}
+            onViewPesquisa={handleSelectPesquisa}
+          />
+        ) : (
+          <ChatArea
+            monitorings={monitorings}
+            inputMode={inputMode}
+            onSetInputMode={setInputMode}
+            onViewMonitoring={handleSelectMonitoring}
+            onViewPesquisa={handleSelectPesquisa}
+            onShowDigest={handleShowDigest}
+            onAddMonitoring={handleAddMonitoring}
+            onCreateMonitoringFromChat={handleAddMonitoringFromChat}
+            onFirstMessage={handleFirstMessage}
+            digestInitialMessage={pendingDigestMessage ?? undefined}
+          />
+        )}
+
+        {selectedDocument && (
+          <DocumentViewerPanel
+            document={selectedDocument}
+            onClose={handleCloseDocument}
+          />
+        )}
+      </div>
     </div>
   )
 }
