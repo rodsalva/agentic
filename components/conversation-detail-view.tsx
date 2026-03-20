@@ -147,7 +147,7 @@ function PesquisaResultDisplay({ pesquisa, onViewPesquisa }: { pesquisa: Pesquis
             <BookOpen className="w-[18px] h-[18px] text-gray-500" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wide mb-0.5">Pesquisa</p>
+            <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wide mb-0.5">Documento <span className="normal-case font-normal opacity-70">· Pesquisa</span></p>
             <p className="text-sm font-medium text-gray-900 truncate">{pesquisa.title}</p>
             <p className="text-xs text-gray-400 leading-relaxed line-clamp-2 mt-1">{pesquisa.expandedQuery}</p>
           </div>
