@@ -7,33 +7,47 @@ import type { PesquisaData } from "@/lib/conversation-data"
 
 // ── Inline content renderer ───────────────────────────────────────
 
-function renderInline(text: string): React.ReactNode {
-  const parts = text.split(/(\*\*[^*]+\*\*)/)
-  return parts.map((part, i) =>
-    part.startsWith("**") && part.endsWith("**")
-      ? <strong key={i} className="font-semibold text-gray-900">{part.slice(2, -2)}</strong>
-      : <React.Fragment key={i}>{part}</React.Fragment>
-  )
+function renderInline(text: string, onOpenDocument?: (id: string) => void): React.ReactNode {
+  // Split on bold (**...**) and doc links ([text](doc:id))
+  const parts = text.split(/(\*\*[^*]+\*\*|\[[^\]]+\]\(doc:[^)]+\))/)
+  return parts.map((part, i) => {
+    if (part.startsWith("**") && part.endsWith("**")) {
+      return <strong key={i} className="font-semibold text-gray-900">{part.slice(2, -2)}</strong>
+    }
+    const linkMatch = part.match(/^\[([^\]]+)\]\(doc:([^)]+)\)$/)
+    if (linkMatch && onOpenDocument) {
+      return (
+        <button
+          key={i}
+          onClick={() => onOpenDocument(linkMatch[2])}
+          className="text-[#2563eb] hover:underline cursor-pointer"
+        >
+          {linkMatch[1]}
+        </button>
+      )
+    }
+    return <React.Fragment key={i}>{part}</React.Fragment>
+  })
 }
 
-function RenderContent({ content }: { content: string }) {
+function RenderContent({ content, onOpenDocument }: { content: string; onOpenDocument?: (id: string) => void }) {
   const lines = content.split("\n")
   return (
     <div className="text-sm text-gray-700 leading-relaxed space-y-1">
       {lines.map((line, i) => {
         if (!line.trim()) return <div key={i} className="h-1.5" />
-        if (line.startsWith("## ")) return <p key={i} className="font-semibold text-gray-900 text-sm mt-4 mb-1 first:mt-0">{line.slice(3)}</p>
-        if (line.startsWith("### ")) return <p key={i} className="font-medium text-gray-800 text-sm mt-2">{line.slice(4)}</p>
+        if (line.startsWith("## ")) return <p key={i} className="font-semibold text-gray-900 text-sm mt-4 mb-1 first:mt-0">{renderInline(line.slice(3), onOpenDocument)}</p>
+        if (line.startsWith("### ")) return <p key={i} className="font-medium text-gray-800 text-sm mt-2">{renderInline(line.slice(4), onOpenDocument)}</p>
         if (line.startsWith("- ")) return (
           <div key={i} className="flex gap-2 ml-1">
             <span className="text-gray-400 flex-shrink-0 mt-0.5">•</span>
-            <span>{renderInline(line.slice(2))}</span>
+            <span>{renderInline(line.slice(2), onOpenDocument)}</span>
           </div>
         )
         if (line.startsWith("| ")) return (
           <p key={i} className="text-sm text-gray-600 font-mono text-xs">{line}</p>
         )
-        return <p key={i}>{renderInline(line)}</p>
+        return <p key={i}>{renderInline(line, onOpenDocument)}</p>
       })}
     </div>
   )
@@ -119,9 +133,11 @@ function ScopedChat() {
 export function PesquisaDetailView({
   pesquisa,
   onBack,
+  onOpenDocument,
 }: {
   pesquisa: PesquisaData
   onBack: () => void
+  onOpenDocument?: (id: string) => void
 }) {
   const [pesquisaOpen, setPesquisaOpen] = useState(true)
   const [respostaOpen, setRespostaOpen] = useState(true)
@@ -197,7 +213,7 @@ export function PesquisaDetailView({
                 <Copy className="w-3 h-3" />
               </button>
             </div>
-            {respostaOpen && <RenderContent content={pesquisa.content} />}
+            {respostaOpen && <RenderContent content={pesquisa.content} onOpenDocument={onOpenDocument} />}
           </div>
 
         </div>
