@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback } from "react"
+import { useState, useCallback, useEffect } from "react"
 import { Sidebar } from "./sidebar"
 import { ChatArea } from "./chat-area-v2"
 import { MonitoringDetailView } from "./monitoring-detail-view"
@@ -10,6 +10,8 @@ import { DigestView } from "./digest-view"
 import { ManorFeed } from "./manor-feed"
 import { DocumentsListView } from "./documents-list-view"
 import { InlineChat } from "./inline-chat"
+import { ManorNudgeContainer, type NudgeData } from "./manor-nudge"
+import { ManorDialog, type DialogData } from "./manor-dialog"
 import { MOCK_MONITORINGS, type MonitoringSubscription } from "@/lib/monitoring-data"
 import { MOCK_CONVERSATIONS, type PesquisaData } from "@/lib/conversation-data"
 import { DocumentViewerPanel } from "./document-viewer-panel"
@@ -32,9 +34,52 @@ export function ManorChat() {
   const [pendingDigestMessage, setPendingDigestMessage] = useState<string | null>(null)
   const [selectedDocumentId, setSelectedDocumentId] = useState<string | null>(null)
   const [inlineChatMonitoring, setInlineChatMonitoring] = useState<MonitoringSubscription | null>(null)
+  const [nudges, setNudges] = useState<NudgeData[]>([])
+  const [activeDialog, setActiveDialog] = useState<DialogData | null>(null)
 
   // Collect all monitorings from conversations so detail view works
   const allConversationMonitorings = MOCK_CONVERSATIONS.flatMap((c) => c.monitoramentos)
+
+  // Proactive nudge — fires once after 12s if there are unseen updates
+  useEffect(() => {
+    const newMonitorings = monitorings.filter((m) => m.hasNew)
+    if (newMonitorings.length === 0) return
+    const t = setTimeout(() => {
+      const top = newMonitorings[0]
+      setNudges((prev) => [
+        ...prev,
+        {
+          id: `nudge-${Date.now()}`,
+          message: `Tenho novidades no ${top.name}. Quer que eu te explique o que mudou?`,
+          chips: ["Sim, mostra", "Agora não"],
+          autoDismiss: 10000,
+          onChip: (chip) => {
+            if (chip === "Sim, mostra") setInlineChatMonitoring(top)
+          },
+        },
+      ])
+    }, 12000)
+    return () => clearTimeout(t)
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Pokémon dialog — fires for high-impact new items
+  useEffect(() => {
+    const criticalMonitoring = monitorings.find(
+      (m) => m.hasNew && m.items.some((i) => i.isNew && i.impact === "alto")
+    )
+    if (!criticalMonitoring) return
+    const criticalItem = criticalMonitoring.items.find((i) => i.isNew && i.impact === "alto")
+    const t = setTimeout(() => {
+      setActiveDialog({
+        message: `"${criticalItem?.title}"`,
+        subtext: `Detectei uma atualização de impacto alto em ${criticalMonitoring.name}. Quer ver agora?`,
+        confirm: "Sim, mostra",
+        dismiss: "Depois",
+        onConfirm: () => setInlineChatMonitoring(criticalMonitoring),
+      })
+    }, 5000)
+    return () => clearTimeout(t)
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleSelectMonitoring = useCallback((id: string) => {
     // Find in global list first, then conversation monitorings
@@ -245,6 +290,18 @@ export function ManorChat() {
           }}
         />
       )}
+
+      {/* Pokémon dialogue — critical event modal */}
+      <ManorDialog
+        dialog={activeDialog}
+        onClose={() => setActiveDialog(null)}
+      />
+
+      {/* Proactive nudge toasts */}
+      <ManorNudgeContainer
+        nudges={nudges}
+        onDismiss={(id) => setNudges((prev) => prev.filter((n) => n.id !== id))}
+      />
     </div>
   )
 }
