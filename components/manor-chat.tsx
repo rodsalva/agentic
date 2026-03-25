@@ -7,8 +7,9 @@ import { MonitoringDetailView } from "./monitoring-detail-view"
 import { ConversationDetailView } from "./conversation-detail-view"
 import { PesquisaDetailView } from "./pesquisa-detail-view"
 import { DigestView } from "./digest-view"
-import { MonitoringsListView } from "./monitorings-list-view"
+import { ManorFeed } from "./manor-feed"
 import { DocumentsListView } from "./documents-list-view"
+import { InlineChat } from "./inline-chat"
 import { MOCK_MONITORINGS, type MonitoringSubscription } from "@/lib/monitoring-data"
 import { MOCK_CONVERSATIONS, type PesquisaData } from "@/lib/conversation-data"
 import { DocumentViewerPanel } from "./document-viewer-panel"
@@ -30,6 +31,7 @@ export function ManorChat() {
   const [hasChatMessages, setHasChatMessages] = useState(false)
   const [pendingDigestMessage, setPendingDigestMessage] = useState<string | null>(null)
   const [selectedDocumentId, setSelectedDocumentId] = useState<string | null>(null)
+  const [inlineChatMonitoring, setInlineChatMonitoring] = useState<MonitoringSubscription | null>(null)
 
   // Collect all monitorings from conversations so detail view works
   const allConversationMonitorings = MOCK_CONVERSATIONS.flatMap((c) => c.monitoramentos)
@@ -173,6 +175,7 @@ export function ManorChat() {
         onShowDocumentsList={handleShowDocumentsList}
         onNewMonitoring={handleNewMonitoring}
         onNewPesquisa={handleNewPesquisa}
+        onOpenInlineChat={(m) => setInlineChatMonitoring(m)}
         chatMonitoringCount={chatMonitoringCount}
         hasChatMessages={hasChatMessages}
       />
@@ -181,9 +184,11 @@ export function ManorChat() {
         {showDocumentsList && !selectedPesquisa ? (
           <DocumentsListView onViewPesquisa={handleSelectPesquisa} />
         ) : showMonitoringsList && !selectedMonitoringId ? (
-          <MonitoringsListView
+          <ManorFeed
             monitorings={monitorings}
+            onOpenChat={(m) => setInlineChatMonitoring(m)}
             onSelectMonitoring={handleSelectMonitoring}
+            onNewMonitoring={handleNewMonitoring}
           />
         ) : showDigest ? (
           <DigestView onBack={handleBackToChat} onStartConversation={handleStartConversationFromDigest} />
@@ -228,6 +233,18 @@ export function ManorChat() {
           />
         )}
       </div>
+
+      {/* Inline Chat overlay — Pokémon-style */}
+      {inlineChatMonitoring && (
+        <InlineChat
+          monitoring={inlineChatMonitoring}
+          onClose={() => setInlineChatMonitoring(null)}
+          onViewFull={(id) => {
+            setInlineChatMonitoring(null)
+            handleSelectMonitoring(id)
+          }}
+        />
+      )}
     </div>
   )
 }

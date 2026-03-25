@@ -124,3 +124,80 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* ── Manor Agent Animations ──────────────────────────────────────── */
+
+@keyframes manor-ring-pulse {
+  0%, 100% { opacity: 0.7; transform: scale(1); }
+  50% { opacity: 0; transform: scale(1.6); }
+}
+
+@keyframes manor-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(251, 191, 36, 0); }
+  50% { box-shadow: 0 0 0 5px rgba(251, 191, 36, 0.25); }
+}
+
+@keyframes manor-blink {
+  0%, 88%, 100% { transform: scaleY(1); }
+  93% { transform: scaleY(0.08); }
+}
+
+@keyframes manor-speaking {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-2px); }
+}
+
+@keyframes manor-slide-up {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+@keyframes manor-card-glow {
+  0%, 100% { border-color: rgb(253, 230, 138); box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+  50% { border-color: rgb(252, 211, 77); box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.08); }
+}
+
+@keyframes manor-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.75); }
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes manor-typing-dot {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+  30% { transform: translateY(-4px); opacity: 1; }
+}
+
+@layer utilities {
+  .animate-manor-ring {
+    animation: manor-ring-pulse 2s ease-in-out infinite;
+  }
+  .animate-manor-glow {
+    animation: manor-glow 2.5s ease-in-out infinite;
+  }
+  .animate-manor-blink {
+    animation: manor-blink 5s ease-in-out infinite;
+  }
+  .animate-manor-speaking {
+    animation: manor-speaking 0.7s ease-in-out infinite;
+  }
+  .animate-manor-slide-up {
+    animation: manor-slide-up 0.28s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+  .animate-manor-card {
+    animation: manor-card-glow 2.5s ease-in-out infinite;
+  }
+  .animate-manor-dot {
+    animation: manor-dot 2s ease-in-out infinite;
+  }
+  .animate-fade-in-up {
+    animation: fade-in-up 0.35s ease-out both;
+  }
+  .animate-typing-dot {
+    animation: manor-typing-dot 1.2s ease-in-out infinite;
+  }
+}

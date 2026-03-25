@@ -1,9 +1,10 @@
 "use client"
 
 import { useState } from "react"
-import { ChevronLeft, LogOut, BookOpen, Bell, Plus, Search, Zap } from "lucide-react"
+import { ChevronLeft, LogOut, BookOpen, Bell, Plus, Search } from "lucide-react"
 import { cn } from "@/lib/utils"
 import type { MonitoringSubscription } from "@/lib/monitoring-data"
+import { ManorAvatar } from "./manor-avatar"
 
 export type MonitoringType = "pesquisa" | "monitoramento"
 
@@ -64,6 +65,7 @@ interface SidebarProps {
   onShowDocumentsList: () => void
   onNewMonitoring: () => void
   onNewPesquisa: () => void
+  onOpenInlineChat?: (monitoring: MonitoringSubscription) => void
   chatMonitoringCount: number
   hasChatMessages: boolean
 }
@@ -77,19 +79,16 @@ function CollapsedSidebar({
   onToggle: () => void
   monitorings: MonitoringSubscription[]
 }) {
-  const totalNew = monitorings.filter((m) => m.hasNew).length
+  const hasNews = monitorings.some((m) => m.hasNew)
 
   return (
-    <div className="w-12 border-r border-gray-200 flex flex-col items-center py-4 gap-4">
-      <button onClick={onToggle} className="text-gray-400 hover:text-gray-600">
-        <ChevronLeft className="w-4 h-4 rotate-180" />
-      </button>
-      {totalNew > 0 && (
-        <div className="relative">
-          <Bell className="w-4 h-4 text-gray-400" />
-          <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-amber-400" />
-        </div>
-      )}
+    <div className="w-12 border-r border-gray-200 flex flex-col items-center py-4 gap-5">
+      <ManorAvatar
+        state={hasNews ? "active" : "idle"}
+        size="sm"
+        hasNews={hasNews}
+        onClick={onToggle}
+      />
     </div>
   )
 }
@@ -112,6 +111,7 @@ export function Sidebar({
   onShowDocumentsList,
   onNewMonitoring,
   onNewPesquisa,
+  onOpenInlineChat,
   chatMonitoringCount,
   hasChatMessages,
 }: SidebarProps) {
@@ -125,9 +125,16 @@ export function Sidebar({
 
       {/* MANOR header */}
       <div className="px-4 pt-5 pb-4 flex items-center justify-between">
-        <a href="/" className="cursor-pointer">
-          <img src="/manor-01.svg" alt="Manor" className="h-5 w-auto" />
-        </a>
+        <div className="flex items-center gap-2.5">
+          <ManorAvatar
+            state={monitorings.some(m => m.hasNew) ? "active" : "idle"}
+            size="sm"
+            hasNews={monitorings.some(m => m.hasNew)}
+          />
+          <a href="/" className="cursor-pointer">
+            <img src="/manor-01.svg" alt="Manor" className="h-4 w-auto opacity-80" />
+          </a>
+        </div>
         <button onClick={onToggle} className="text-gray-400 hover:text-gray-600">
           <ChevronLeft className="w-4 h-4" />
         </button>
@@ -167,6 +174,23 @@ export function Sidebar({
           </div>
         )
       })()}
+
+      {/* ── Active monitorings mini-list ──────────────────────────── */}
+      {monitorings.filter(m => m.hasNew).length > 0 && (
+        <div className="px-2 mt-1 space-y-0.5">
+          {monitorings.filter(m => m.hasNew).map(m => (
+            <button
+              key={m.id}
+              onClick={() => onOpenInlineChat ? onOpenInlineChat(m) : onSelectMonitoring(m.id)}
+              className="w-full flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-amber-50 transition-colors cursor-pointer group"
+            >
+              <div className="w-1.5 h-1.5 rounded-full bg-amber-400 flex-shrink-0 animate-manor-dot" />
+              <span className="text-xs text-gray-600 truncate flex-1 text-left group-hover:text-gray-900">{m.name}</span>
+              <span className="text-[10px] font-bold text-amber-600 flex-shrink-0">{m.newCount}</span>
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* ── CONVERSAS section ─────────────────────────────────────── */}
       <div className="px-4 pb-1 mt-10 flex items-center justify-between">
