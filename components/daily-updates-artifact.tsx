@@ -812,9 +812,6 @@ export function DailyUpdatesArtifact({ fullScreen = false }: { fullScreen?: bool
         <div className="flex-1 overflow-y-auto [&::-webkit-scrollbar]:w-[3px] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-gray-300">
           {filteredItems.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full px-4 text-center">
-              <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center mb-3">
-                <Search className="w-4 h-4 text-gray-400" />
-              </div>
               <p className="text-sm font-medium text-gray-700 mb-1">Nenhum resultado</p>
               <p className="text-xs text-gray-400 mb-4">Tente outros termos ou filtros</p>
               <div className="flex flex-wrap justify-center gap-1.5">

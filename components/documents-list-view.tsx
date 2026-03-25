@@ -4,6 +4,7 @@ import { useState } from "react"
 import { BookOpen, ChevronRight } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { MOCK_CONVERSATIONS, type PesquisaData } from "@/lib/conversation-data"
+import { ManorAvatar } from "./manor-avatar"
 
 type SortOrder = "recencia" | "alfabetica"
 
@@ -109,7 +110,11 @@ export function DocumentsListView({
       <div className="flex-1 overflow-y-auto min-h-0 [&::-webkit-scrollbar]:w-[2px] [&::-webkit-scrollbar-thumb]:bg-gray-100">
         <div className="max-w-3xl mx-auto w-full px-8 py-6">
           {sorted.length === 0 ? (
-            <p className="text-sm text-gray-400 text-center py-20">Nenhuma pesquisa ainda.</p>
+            <div className="flex flex-col items-center gap-3 py-24 text-center">
+              <ManorAvatar state="waiting" size="lg" />
+              <p className="text-sm text-gray-500">Nenhuma pesquisa ainda.</p>
+              <p className="text-xs text-gray-400">Me faz uma pergunta e guardo aqui.</p>
+            </div>
           ) : (
             <div className="grid grid-cols-2 gap-4">
               {sorted.map((doc) => (

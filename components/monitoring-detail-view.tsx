@@ -60,11 +60,20 @@ function ItemDetail({ item, onBack }: { item: MonitoringItem; onBack: () => void
         </div>
       </div>
 
-      {/* Implicações */}
+      {/* Manor insight */}
       {item.implications && (
         <div className="mb-6 border-t border-gray-100 pt-5">
-          <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-2">Implicações</p>
-          <p className="text-sm text-gray-600 leading-relaxed">{item.implications}</p>
+          <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-3">O que isso significa</p>
+          <div className="flex items-start gap-2.5">
+            <ManorAvatar
+              state="active"
+              size="sm"
+              className="flex-shrink-0 mt-0.5"
+            />
+            <div className="bg-gray-50 rounded-2xl rounded-tl-sm px-4 py-3">
+              <p className="text-sm text-gray-700 leading-relaxed">{item.implications}</p>
+            </div>
+          </div>
         </div>
       )}
     </div>

@@ -1,8 +1,9 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import { Bell, X, Check, ChevronRight, Sparkles, Loader2, Edit3 } from "lucide-react"
+import { Bell, X, Check, ChevronRight, Edit3 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { ManorAvatar, TypingIndicator } from "./manor-avatar"
 
 type SourceType = "stf" | "stj" | "trf" | "receita" | "dou" | "carf"
 type Tributo = "IRPJ" | "CSLL" | "PIS" | "COFINS" | "IPI" | "ISS" | "ICMS"
@@ -103,10 +104,8 @@ export function MonitoringSetupFlow({
     return (
       <div className="bg-white border border-gray-200 rounded-2xl p-5 max-w-lg mx-auto shadow-sm">
         <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center">
-              <Sparkles className="w-4 h-4 text-amber-600" />
-            </div>
+          <div className="flex items-center gap-2.5">
+            <ManorAvatar state="active" size="sm" />
             <span className="text-sm font-semibold text-gray-900">Refinar monitoramento</span>
           </div>
           <button onClick={onCancel} className="text-gray-400 hover:text-gray-600 cursor-pointer">
@@ -115,9 +114,12 @@ export function MonitoringSetupFlow({
         </div>
 
         {isRefining ? (
-          <div className="py-8 flex flex-col items-center justify-center">
-            <Loader2 className="w-6 h-6 text-amber-500 animate-spin mb-3" />
-            <p className="text-sm text-gray-600">Interpretando seu pedido...</p>
+          <div className="py-8 flex flex-col items-center justify-center gap-3">
+            <ManorAvatar state="speaking" size="lg" />
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-500">Organizando o escopo</span>
+              <TypingIndicator />
+            </div>
           </div>
         ) : (
           <>
@@ -204,11 +206,9 @@ export function MonitoringSetupFlow({
   return (
     <div className="bg-white border border-gray-200 rounded-2xl p-5 max-w-lg mx-auto shadow-sm">
       <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center">
-            <Bell className="w-4 h-4 text-emerald-600" />
-          </div>
-          <span className="text-sm font-semibold text-gray-900">Criar monitoramento</span>
+        <div className="flex items-center gap-2.5">
+          <ManorAvatar state="active" size="sm" />
+          <span className="text-sm font-semibold text-gray-900">Tudo certo. Posso criar?</span>
         </div>
         <button onClick={onCancel} className="text-gray-400 hover:text-gray-600 cursor-pointer">
           <X className="w-4 h-4" />
@@ -285,19 +285,19 @@ export function MonitoringSetupFlow({
       </div>
 
       <p className="text-xs text-gray-500 mb-4">
-        Você será alertado sempre que surgir algo novo sobre este tema.
+        Estarei de olho nesse tema e te aviso quando aparecer algo relevante.
       </p>
 
       <div className="flex items-center gap-2">
         <button
           onClick={onCancel}
-          className="flex-1 px-4 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 transition-colors cursor-pointer"
+          className="px-4 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 transition-colors cursor-pointer"
         >
           Cancelar
         </button>
         <button
           onClick={handleCreate}
-          className="flex-1 px-4 py-2.5 rounded-xl bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-500 transition-colors cursor-pointer flex items-center justify-center gap-2"
+          className="flex-1 px-4 py-2.5 rounded-xl bg-gray-900 text-white text-sm font-medium hover:bg-gray-700 transition-colors cursor-pointer flex items-center justify-center gap-2"
         >
           <Check className="w-4 h-4" />
           Criar monitoramento

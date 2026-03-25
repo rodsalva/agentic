@@ -1249,7 +1249,7 @@ export function ChatArea({
                     onCreateMonitoring={onCreateMonitoringFromChat}
                     onConfirmed={() => setMessages((prev) => [
                       ...prev,
-                      { role: "assistant", content: "Monitoramento criado. Posso ajudar em algo mais?", contextType: "monitoring-created" },
+                      { role: "assistant", content: "Feito. Estarei de olho nesse tema e te aviso quando aparecer algo relevante.", contextType: "monitoring-created" },
                     ])}
                   />
                 </div>
@@ -1258,9 +1258,10 @@ export function ChatArea({
 
             if (msg.contextType === "monitoring-created") {
               return (
-                <div key={index} className="flex justify-start">
-                  <div className="bg-gray-100 rounded-2xl px-5 py-3.5">
-                    <p className="text-sm text-gray-800">{msg.content}</p>
+                <div key={index} className="flex items-start gap-2 justify-start">
+                  <ManorAvatar state="idle" size="xs" className="flex-shrink-0 mt-1" />
+                  <div className="bg-gray-50 rounded-2xl rounded-tl-sm px-4 py-3">
+                    <p className="text-sm text-gray-800 leading-relaxed">{msg.content}</p>
                   </div>
                 </div>
               )
@@ -1293,8 +1294,11 @@ export function ChatArea({
                       <RSAvatar />
                     </>
                   ) : (
-                    <div className="bg-gray-100 rounded-2xl px-5 py-3.5 max-w-[80%]">
-                      <p className="text-sm text-gray-800">{msg.content}</p>
+                    <div className="flex items-start gap-2 max-w-[80%]">
+                      <ManorAvatar state="idle" size="xs" className="flex-shrink-0 mt-1" />
+                      <div className="bg-gray-50 rounded-2xl rounded-tl-sm px-4 py-3">
+                        <p className="text-sm text-gray-800 leading-relaxed">{msg.content}</p>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -1312,7 +1316,7 @@ export function ChatArea({
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Digitar mensagem..."
+              placeholder="Fala comigo..."
               autoFocus
               className="w-full px-5 py-4 pr-14 border border-gray-200 rounded-full text-sm text-gray-600 placeholder:text-gray-400 focus:outline-none focus:ring-0 focus:border-gray-300"
             />
