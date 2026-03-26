@@ -3,9 +3,11 @@
 import { useState, useRef, useEffect } from "react"
 import { X, Send } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { ManorAvatar, TypingIndicator } from "./manor-avatar"
-import type { AvatarState } from "./manor-avatar"
-import type { MonitoringSubscription } from "@/lib/monitoring-data"
+import { TypingIndicator } from "./manor-avatar"
+import type { MonitoringSubscription, MonitoringItem } from "@/lib/monitoring-data"
+
+const M_PATH =
+  "M170.9692,116.4327c-4.5887,101.499,6.7994,208.8521.2431,309.4579-2.837,44.8112-19.0157,58.3276-64.5367,56.3806l-3.2006,3.2017-.1758,7.1131,154.8776-.0315-3.3807-10.3126c-14.4031.0022-35.0294-1.2383-46.5901-10.8379-16.7181-14.0439-11.7441-45.3409-15.8379-64.5443l-.0532-266.979c15.9442,18.384,30.7109,38.5805,45.3799,58.6793l-.0065.0771,127.8502,181.0172,44.0982,62.4138,11.9134,16.7148,16.7148-31.4739,14.7591-27.9173v-.178l16.8928-31.6508,127.8502-237.5628v317.0463c0,.89-3.7345,14.7591-4.6234,16.3599-8.5349,17.9597-38.409,19.5594-55.4787,18.4925l-3.5566,10.6686,191.1529-.1769-1.9557-9.6028c-25.0728-1.5997-55.4787-1.7777-61.347-32.1848.534-97.2652-9.2468-204.1332-2.6677-300.8655,3.2017-45.699,20.6273-49.4336,63.8367-49.6105v-10.6697l-131.5848.178-153.0999,288.9521-147.4096-209.2906-.0554-.0391.0619-.0347c-46.6725-64.5063-95.1564-125.5255-188.3984-121.9961l-45.699,6.4011,3.5566,8.5349c44.7114-3.689,80.7078,23.8583,110.4701,54.2697Z"
 
 // ── Types ──────────────────────────────────────────────────────────
 
@@ -15,9 +17,31 @@ interface ChatMsg {
   chips?: string[]
 }
 
-// ── Opener generator ───────────────────────────────────────────────
+// ── Opener generator — item level ──────────────────────────────────
+
+function buildItemOpener(item: MonitoringItem): { message: string; chips: string[] } {
+  const impactLabel =
+    item.impact === "alto" ? "impacto alto" : item.impact === "medio" ? "impacto médio" : "impacto baixo"
+  const detail = item.implications ?? item.ementa
+  return {
+    message: `**"${item.title}"** — ${item.orgao}${item.turma ? `, ${item.turma}` : ""} · ${item.date}. ${detail} Quer que eu te explique o que isso significa para você?`,
+    chips: ["Me explica", "Ver o documento", "Não é urgente agora"],
+  }
+}
+
+// ── Opener generator — general (no specific context) ───────────────
+
+export const GENERAL_MONITORING_ID = "__general__"
+
+// ── Opener generator — monitoring level ────────────────────────────
 
 function buildOpener(m: MonitoringSubscription): { message: string; chips: string[] } {
+  if (m.id === GENERAL_MONITORING_ID) {
+    return {
+      message: "Olá! Posso te ajudar com qualquer dúvida sobre tributário, pesquisas ou monitoramentos. O que você precisa?",
+      chips: ["O que tem de novo?", "Criar monitoramento", "Pesquisar algo"],
+    }
+  }
   if (m.hasNew && m.newCount > 0) {
     const newItem = m.items.find((i) => i.isNew)
     const impactTag =
@@ -73,26 +97,25 @@ function getReply(content: string): string {
 
 interface InlineChatProps {
   monitoring: MonitoringSubscription
+  item?: MonitoringItem
   onClose: () => void
   onViewFull: (id: string) => void
 }
 
-export function InlineChat({ monitoring, onClose, onViewFull }: InlineChatProps) {
-  const opener = buildOpener(monitoring)
+export function InlineChat({ monitoring, item, onClose, onViewFull }: InlineChatProps) {
+  const opener = item ? buildItemOpener(item) : buildOpener(monitoring)
   const [messages, setMessages] = useState<ChatMsg[]>([
     { role: "manor", content: opener.message, chips: opener.chips },
   ])
   const [input, setInput] = useState("")
-  const [avatarState, setAvatarState] = useState<AvatarState>("speaking")
   const [isTyping, setIsTyping] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     const t = setTimeout(() => {
-      setAvatarState("active")
       inputRef.current?.focus()
-    }, 1200)
+    }, 300)
     return () => clearTimeout(t)
   }, [])
 
@@ -105,12 +128,10 @@ export function InlineChat({ monitoring, onClose, onViewFull }: InlineChatProps)
     setMessages((prev) => [...prev, { role: "user", content }])
     setInput("")
     setIsTyping(true)
-    setAvatarState("speaking")
 
     setTimeout(() => {
       setIsTyping(false)
       setMessages((prev) => [...prev, { role: "manor", content: getReply(content) }])
-      setAvatarState("active")
     }, 900)
   }
 
@@ -141,23 +162,30 @@ export function InlineChat({ monitoring, onClose, onViewFull }: InlineChatProps)
         </div>
 
         {/* Header */}
-        <div className="px-4 py-2.5 flex items-center justify-between border-b border-gray-100 flex-shrink-0">
-          <div className="flex items-center gap-2.5">
-            <ManorAvatar state={avatarState} size="sm" />
-            <div className="min-w-0">
-              <p className="text-sm font-semibold text-gray-900 leading-tight">Manor</p>
-              <p className="text-[11px] text-gray-400 truncate max-w-[200px] leading-tight">
-                {monitoring.name}
-              </p>
+        <div className="px-4 py-3 flex items-center justify-between border-b border-gray-100 flex-shrink-0">
+          <div className="flex items-center gap-3 min-w-0">
+            {/* Plain M — no octagon, only instance in the UI */}
+            <svg viewBox="40 100 700 390" className="w-5 h-5 flex-shrink-0" preserveAspectRatio="xMidYMid meet">
+              <path fill="#111827" d={M_PATH} />
+            </svg>
+            <div className="flex items-center gap-2 min-w-0">
+              <span className="text-sm font-semibold text-gray-900 leading-none">Manor</span>
+              {monitoring.id !== GENERAL_MONITORING_ID && (
+                <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold tracking-wide bg-amber-50 text-amber-600 border border-amber-200 truncate max-w-[220px]">
+                  {item ? `${monitoring.name} · ${item.orgao}` : monitoring.name}
+                </span>
+              )}
             </div>
           </div>
-          <div className="flex items-center gap-1">
-            <button
-              onClick={() => onViewFull(monitoring.id)}
-              className="text-xs text-gray-500 hover:text-gray-900 px-2.5 py-1.5 rounded-lg hover:bg-gray-100 transition-colors"
-            >
-              Ver completo
-            </button>
+          <div className="flex items-center gap-1 flex-shrink-0">
+            {monitoring.id !== GENERAL_MONITORING_ID && (
+              <button
+                onClick={() => onViewFull(monitoring.id)}
+                className="text-xs text-gray-500 hover:text-gray-900 px-2.5 py-1.5 rounded-lg hover:bg-gray-100 transition-colors"
+              >
+                Ver completo
+              </button>
+            )}
             <button
               onClick={onClose}
               className="text-gray-400 hover:text-gray-600 p-1.5 rounded-lg hover:bg-gray-100 transition-colors"
@@ -176,30 +204,23 @@ export function InlineChat({ monitoring, onClose, onViewFull }: InlineChatProps)
               style={{ animationDelay: `${i === 0 ? 0 : 0}ms` }}
             >
               {msg.role === "manor" ? (
-                <div className="flex items-start gap-2.5 max-w-[88%]">
-                  <ManorAvatar
-                    state={i === messages.length - 1 && avatarState === "speaking" ? "speaking" : "idle"}
-                    size="xs"
-                    className="mt-1 flex-shrink-0"
-                  />
-                  <div className="space-y-2">
-                    <div className="bg-gray-50 rounded-2xl rounded-tl-sm px-3.5 py-2.5">
-                      <p className="text-sm text-gray-800 leading-relaxed">{renderContent(msg.content)}</p>
-                    </div>
-                    {msg.chips && (
-                      <div className="flex flex-wrap gap-1.5">
-                        {msg.chips.map((chip) => (
-                          <button
-                            key={chip}
-                            onClick={() => send(chip)}
-                            className="px-3 py-1.5 text-xs bg-white border border-gray-200 text-gray-700 rounded-full hover:bg-gray-900 hover:text-white hover:border-gray-900 transition-all duration-150"
-                          >
-                            {chip}
-                          </button>
-                        ))}
-                      </div>
-                    )}
+                <div className="flex flex-col gap-2 max-w-[88%]">
+                  <div className="bg-gray-50 rounded-2xl rounded-tl-sm px-3.5 py-2.5">
+                    <p className="text-sm text-gray-800 leading-relaxed">{renderContent(msg.content)}</p>
                   </div>
+                  {msg.chips && (
+                    <div className="flex flex-wrap gap-1.5">
+                      {msg.chips.map((chip) => (
+                        <button
+                          key={chip}
+                          onClick={() => send(chip)}
+                          className="px-3 py-1.5 text-xs bg-white border border-gray-200 text-gray-700 rounded-full hover:bg-gray-900 hover:text-white hover:border-gray-900 transition-all duration-150"
+                        >
+                          {chip}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="flex justify-end">
@@ -213,8 +234,7 @@ export function InlineChat({ monitoring, onClose, onViewFull }: InlineChatProps)
 
           {/* Typing indicator */}
           {isTyping && (
-            <div className="flex items-start gap-2.5 animate-fade-in-up">
-              <ManorAvatar state="speaking" size="xs" className="mt-1 flex-shrink-0" />
+            <div className="flex items-start animate-fade-in-up">
               <div className="bg-gray-50 rounded-2xl rounded-tl-sm px-3.5 py-3">
                 <TypingIndicator />
               </div>

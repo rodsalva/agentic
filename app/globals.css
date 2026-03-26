@@ -172,6 +172,86 @@
   30% { transform: translateY(-4px); opacity: 1; }
 }
 
+/* Robot M animations */
+
+@keyframes manor-float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-1.5px); }
+}
+
+@keyframes manor-m-breathe {
+  0%, 100% { opacity: 0.92; }
+  50% { opacity: 1; }
+}
+
+@keyframes manor-m-scan {
+  0%, 100% { opacity: 0.85; transform: scaleX(1); }
+  25% { opacity: 1; }
+  50% { opacity: 0.9; transform: scaleX(1.01); }
+  75% { opacity: 1; }
+}
+
+@keyframes manor-scan-line {
+  0% { top: 10%; opacity: 0; }
+  10% { opacity: 0.6; }
+  90% { opacity: 0.3; }
+  100% { top: 90%; opacity: 0; }
+}
+
+@keyframes manor-eye-blink {
+  0%, 85%, 100% { transform: scaleY(1); }
+  92% { transform: scaleY(0.06); }
+}
+
+@keyframes manor-eye-idle {
+  0%, 90%, 100% { transform: translateX(0); }
+  94% { transform: translateX(0.6px); }
+  97% { transform: translateX(-0.4px); }
+}
+
+/* ── Space environment ───────────────────────────────────────────── */
+
+@keyframes space-node-float {
+  0%, 100% { transform: translate(-50%, -50%) translateY(0px); }
+  50%       { transform: translate(-50%, -50%) translateY(-9px); }
+}
+
+@keyframes space-orb-pulse {
+  0%, 100% { opacity: 0.55; transform: scale(1); }
+  50%       { opacity: 0.85; transform: scale(1.06); }
+}
+
+@keyframes space-line-flow {
+  to { stroke-dashoffset: -12; }
+}
+
+@keyframes space-card-in {
+  from { opacity: 0; transform: translateY(-50%) scale(0.96) translateX(-6px); }
+  to   { opacity: 1; transform: translateY(-50%) scale(1)    translateX(0px);  }
+}
+
+@keyframes space-card-in-left {
+  from { opacity: 0; transform: translateY(-50%) scale(0.96) translateX(6px); }
+  to   { opacity: 1; transform: translateY(-50%) scale(1)   translateX(0px); }
+}
+
+@keyframes space-prompt-fade {
+  0%   { opacity: 0; transform: translateX(-50%) translateY(6px); }
+  15%  { opacity: 1; transform: translateX(-50%) translateY(0px); }
+  80%  { opacity: 1; transform: translateX(-50%) translateY(0px); }
+  100% { opacity: 0; transform: translateX(-50%) translateY(-4px); }
+}
+
+@keyframes space-star-twinkle {
+  0%, 100% { opacity: 0.55; }
+  50%       { opacity: 0.08; }
+}
+
+/* Octagon clip */
+.clip-octagon {
+  clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
+}
+
 @layer utilities {
   .animate-manor-ring {
     animation: manor-ring-pulse 2s ease-in-out infinite;
@@ -199,5 +279,23 @@
   }
   .animate-typing-dot {
     animation: manor-typing-dot 1.2s ease-in-out infinite;
+  }
+  .animate-manor-float {
+    animation: manor-float 3.2s ease-in-out infinite;
+  }
+  .animate-manor-m-breathe {
+    animation: manor-m-breathe 3s ease-in-out infinite;
+  }
+  .animate-manor-m-scan {
+    animation: manor-m-scan 0.55s ease-in-out infinite;
+  }
+  .animate-manor-scan-line {
+    animation: manor-scan-line 1.1s linear infinite;
+  }
+  .animate-manor-eye-blink {
+    animation: manor-eye-blink 4s ease-in-out infinite;
+  }
+  .animate-manor-eye-idle {
+    animation: manor-eye-idle 6s ease-in-out infinite;
   }
 }

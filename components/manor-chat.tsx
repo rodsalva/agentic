@@ -9,13 +9,16 @@ import { PesquisaDetailView } from "./pesquisa-detail-view"
 import { DigestView } from "./digest-view"
 import { ManorFeed } from "./manor-feed"
 import { DocumentsListView } from "./documents-list-view"
-import { InlineChat } from "./inline-chat"
-import { ManorNudgeContainer, type NudgeData } from "./manor-nudge"
+import { InlineChat, GENERAL_MONITORING_ID } from "./inline-chat"
 import { ManorDialog, type DialogData } from "./manor-dialog"
-import { MOCK_MONITORINGS, type MonitoringSubscription } from "@/lib/monitoring-data"
+import { MOCK_MONITORINGS, type MonitoringSubscription, type MonitoringItem } from "@/lib/monitoring-data"
 import { MOCK_CONVERSATIONS, type PesquisaData } from "@/lib/conversation-data"
 import { DocumentViewerPanel } from "./document-viewer-panel"
+import dynamic from "next/dynamic"
+const ManorSpace = dynamic(() => import("./manor-space").then(m => m.ManorSpace), { ssr: false })
+import { type ActiveChatContext } from "./sidebar"
 import { findDocument } from "@/lib/document-data"
+import { LitigationMapView } from "./litigation-map-view"
 
 export type InputMode = "default" | "pesquisar" | "monitorar"
 
@@ -28,58 +31,31 @@ export function ManorChat() {
   const [showDigest, setShowDigest] = useState(false)
   const [showMonitoringsList, setShowMonitoringsList] = useState(false)
   const [showDocumentsList, setShowDocumentsList] = useState(false)
+  const [showLitigationMap, setShowLitigationMap] = useState(false)
   const [inputMode, setInputMode] = useState<InputMode>("default")
   const [chatMonitoringCount, setChatMonitoringCount] = useState(0)
   const [hasChatMessages, setHasChatMessages] = useState(false)
   const [pendingDigestMessage, setPendingDigestMessage] = useState<string | null>(null)
   const [selectedDocumentId, setSelectedDocumentId] = useState<string | null>(null)
   const [inlineChatMonitoring, setInlineChatMonitoring] = useState<MonitoringSubscription | null>(null)
-  const [nudges, setNudges] = useState<NudgeData[]>([])
-  const [activeDialog, setActiveDialog] = useState<DialogData | null>(null)
+  const [itemChat, setItemChat] = useState<{ item: MonitoringItem; monitoring: MonitoringSubscription } | null>(null)
+  const [generalChat, setGeneralChat] = useState(false)
 
+  const GENERAL_MONITORING: MonitoringSubscription = {
+    id: GENERAL_MONITORING_ID,
+    name: "",
+    scope: { sources: [], tributos: [], assuntos: [] },
+    status: "active",
+    lastChecked: "",
+    newCount: 0,
+    hasNew: false,
+    items: [],
+    impactSummary: "",
+    suggestions: [],
+  }
+  const [activeDialog, setActiveDialog] = useState<DialogData | null>(null)
   // Collect all monitorings from conversations so detail view works
   const allConversationMonitorings = MOCK_CONVERSATIONS.flatMap((c) => c.monitoramentos)
-
-  // Proactive nudge — fires once after 12s if there are unseen updates
-  useEffect(() => {
-    const newMonitorings = monitorings.filter((m) => m.hasNew)
-    if (newMonitorings.length === 0) return
-    const t = setTimeout(() => {
-      const top = newMonitorings[0]
-      setNudges((prev) => [
-        ...prev,
-        {
-          id: `nudge-${Date.now()}`,
-          message: `Tenho novidades no ${top.name}. Quer que eu te explique o que mudou?`,
-          chips: ["Sim, mostra", "Agora não"],
-          autoDismiss: 10000,
-          onChip: (chip) => {
-            if (chip === "Sim, mostra") setInlineChatMonitoring(top)
-          },
-        },
-      ])
-    }, 12000)
-    return () => clearTimeout(t)
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Pokémon dialog — fires for high-impact new items
-  useEffect(() => {
-    const criticalMonitoring = monitorings.find(
-      (m) => m.hasNew && m.items.some((i) => i.isNew && i.impact === "alto")
-    )
-    if (!criticalMonitoring) return
-    const criticalItem = criticalMonitoring.items.find((i) => i.isNew && i.impact === "alto")
-    const t = setTimeout(() => {
-      setActiveDialog({
-        message: `"${criticalItem?.title}"`,
-        subtext: `Detectei uma atualização de impacto alto em ${criticalMonitoring.name}. Quer ver agora?`,
-        confirm: "Sim, mostra",
-        dismiss: "Depois",
-        onConfirm: () => setInlineChatMonitoring(criticalMonitoring),
-      })
-    }, 5000)
-    return () => clearTimeout(t)
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleSelectMonitoring = useCallback((id: string) => {
     // Find in global list first, then conversation monitorings
@@ -123,6 +99,7 @@ export function ManorChat() {
   const handleShowMonitoringsList = useCallback(() => {
     setShowMonitoringsList(true)
     setShowDocumentsList(false)
+    setShowLitigationMap(false)
     setSelectedMonitoringId(null)
     setSelectedConversationId(null)
     setSelectedPesquisa(null)
@@ -131,6 +108,17 @@ export function ManorChat() {
 
   const handleShowDocumentsList = useCallback(() => {
     setShowDocumentsList(true)
+    setShowMonitoringsList(false)
+    setShowLitigationMap(false)
+    setSelectedMonitoringId(null)
+    setSelectedConversationId(null)
+    setSelectedPesquisa(null)
+    setShowDigest(false)
+  }, [])
+
+  const handleShowLitigationMap = useCallback(() => {
+    setShowLitigationMap(true)
+    setShowDocumentsList(false)
     setShowMonitoringsList(false)
     setSelectedMonitoringId(null)
     setSelectedConversationId(null)
@@ -202,6 +190,14 @@ export function ManorChat() {
 
   const selectedDocument = selectedDocumentId ? findDocument(selectedDocumentId) ?? null : null
 
+  const activeChatContext: ActiveChatContext = generalChat
+    ? { type: "general" }
+    : itemChat
+    ? { type: "monitoring", name: itemChat.monitoring.name }
+    : inlineChatMonitoring
+    ? { type: "monitoring", name: inlineChatMonitoring.name }
+    : null
+
   return (
     <div className="flex h-screen bg-white">
       <Sidebar
@@ -218,15 +214,21 @@ export function ManorChat() {
         onShowDigest={handleShowDigest}
         onShowMonitoringsList={handleShowMonitoringsList}
         onShowDocumentsList={handleShowDocumentsList}
+        showLitigationMap={showLitigationMap}
+        onShowLitigationMap={handleShowLitigationMap}
         onNewMonitoring={handleNewMonitoring}
         onNewPesquisa={handleNewPesquisa}
         onOpenInlineChat={(m) => setInlineChatMonitoring(m)}
+        onOpenGeneralChat={() => setGeneralChat(true)}
         chatMonitoringCount={chatMonitoringCount}
         hasChatMessages={hasChatMessages}
+        activeChatContext={activeChatContext}
       />
 
-      <div className="flex flex-1 min-w-0 h-full">
-        {showDocumentsList && !selectedPesquisa ? (
+      <div className="relative flex flex-1 min-w-0 h-full">
+        {showLitigationMap ? (
+          <LitigationMapView />
+        ) : showDocumentsList && !selectedPesquisa ? (
           <DocumentsListView onViewPesquisa={handleSelectPesquisa} />
         ) : showMonitoringsList && !selectedMonitoringId ? (
           <ManorFeed
@@ -248,6 +250,7 @@ export function ManorChat() {
             monitoring={selectedMonitoring}
             onBack={selectedConversationId ? handleBackFromMonitoringToConversation : showMonitoringsList ? () => setSelectedMonitoringId(null) : handleBackToChat}
             onTogglePause={handleTogglePause}
+            onOpenItemChat={(item) => setItemChat({ item, monitoring: selectedMonitoring })}
           />
         ) : selectedConversationId ? (
           <ConversationDetailView
@@ -257,17 +260,9 @@ export function ManorChat() {
             onViewPesquisa={handleSelectPesquisa}
           />
         ) : (
-          <ChatArea
+          <ManorSpace
             monitorings={monitorings}
-            inputMode={inputMode}
-            onSetInputMode={setInputMode}
-            onViewMonitoring={handleSelectMonitoring}
-            onViewPesquisa={handleSelectPesquisa}
-            onShowDigest={handleShowDigest}
-            onAddMonitoring={handleAddMonitoring}
-            onCreateMonitoringFromChat={handleAddMonitoringFromChat}
-            onFirstMessage={handleFirstMessage}
-            digestInitialMessage={pendingDigestMessage ?? undefined}
+            onOpenChat={() => setGeneralChat(true)}
           />
         )}
 
@@ -279,13 +274,16 @@ export function ManorChat() {
         )}
       </div>
 
-      {/* Inline Chat overlay — Pokémon-style */}
-      {inlineChatMonitoring && (
+      {/* Inline Chat overlay — general or specific */}
+      {(generalChat || inlineChatMonitoring || itemChat) && (
         <InlineChat
-          monitoring={inlineChatMonitoring}
-          onClose={() => setInlineChatMonitoring(null)}
+          monitoring={generalChat ? GENERAL_MONITORING : (itemChat?.monitoring ?? inlineChatMonitoring!)}
+          item={itemChat?.item}
+          onClose={() => { setGeneralChat(false); setInlineChatMonitoring(null); setItemChat(null) }}
           onViewFull={(id) => {
+            setGeneralChat(false)
             setInlineChatMonitoring(null)
+            setItemChat(null)
             handleSelectMonitoring(id)
           }}
         />
@@ -297,11 +295,6 @@ export function ManorChat() {
         onClose={() => setActiveDialog(null)}
       />
 
-      {/* Proactive nudge toasts */}
-      <ManorNudgeContainer
-        nudges={nudges}
-        onDismiss={(id) => setNudges((prev) => prev.filter((n) => n.id !== id))}
-      />
     </div>
   )
 }
