@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Check, ChevronRight, Scale, ArrowRight, AlertTriangle, XCircle, CheckCircle2 } from "lucide-react"
+import { Check, ChevronRight, Scale, ArrowRight, AlertTriangle, XCircle, CheckCircle2, Download } from "lucide-react"
 
 // ── Palette ───────────────────────────────────────────────────────
 const BG     = "#08061a"
@@ -361,19 +361,51 @@ export function LitigationMapView() {
     }}>
       <div style={{ maxWidth: 1080, margin: "0 auto", padding: "36px 32px 64px" }}>
 
-        {/* ── Title ── */}
-        <div style={{ display: "flex", alignItems: "center", gap: 9, marginBottom: 6 }}>
-          <Scale style={{ width: 13, height: 13, color: AMBER, strokeWidth: 1.5 }} />
-          <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: AMBER }}>
-            Contencioso Tributário
-          </span>
+        {/* ── Title row ── */}
+        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16 }}>
+          <div>
+            <div style={{ display: "flex", alignItems: "center", gap: 9, marginBottom: 6 }}>
+              <Scale style={{ width: 13, height: 13, color: AMBER, strokeWidth: 1.5 }} />
+              <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: AMBER }}>
+                Contencioso Tributário
+              </span>
+            </div>
+            <h1 style={{ fontSize: 26, fontWeight: 800, color: WHITE, letterSpacing: "-0.025em", margin: "0 0 3px", lineHeight: 1.1 }}>
+              Ágio Interno na Reorganização Societária
+            </h1>
+            <p style={{ fontSize: 13, color: MID, margin: 0 }}>
+              IRPJ · CSLL · Grupo Industrial Alfa S.A. · Autuação: Mar/2021
+            </p>
+          </div>
+
+          {/* Export button */}
+          <button
+            style={{
+              display: "flex", alignItems: "center", gap: 8,
+              padding: "9px 16px",
+              borderRadius: 10,
+              background: CARD,
+              border: `1px solid ${BORDER}`,
+              cursor: "pointer",
+              transition: "all 0.15s ease",
+              flexShrink: 0,
+              marginTop: 4,
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.background = "rgba(255,255,255,0.08)"
+              e.currentTarget.style.borderColor = "rgba(255,255,255,0.18)"
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.background = CARD
+              e.currentTarget.style.borderColor = BORDER
+            }}
+          >
+            <Download style={{ width: 14, height: 14, color: WHITE, strokeWidth: 1.8 }} />
+            <span style={{ fontSize: 12.5, fontWeight: 500, color: WHITE, letterSpacing: "0.01em" }}>
+              Exportar
+            </span>
+          </button>
         </div>
-        <h1 style={{ fontSize: 26, fontWeight: 800, color: WHITE, letterSpacing: "-0.025em", margin: "0 0 3px", lineHeight: 1.1 }}>
-          Ágio Interno na Reorganização Societária
-        </h1>
-        <p style={{ fontSize: 13, color: MID, margin: 0 }}>
-          IRPJ · CSLL · Grupo Industrial Alfa S.A. · Autuação: Mar/2021
-        </p>
 
         {/* ── Metrics ── */}
         <div style={{
