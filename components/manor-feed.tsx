@@ -31,16 +31,16 @@ function FeedCard({
   const isPaused = monitoring.status === "paused"
   const hasNew = monitoring.hasNew
   const summary = MANOR_VOICE[monitoring.id] ?? monitoring.impactSummary
-
   return (
     <div
       className={cn(
-        "bg-white rounded-2xl p-5 flex flex-col gap-3.5 transition-all duration-300",
+        "bg-white rounded-2xl p-5 flex flex-col gap-3.5 transition-all duration-200",
         hasNew
           ? "border-2 border-amber-200 animate-manor-card"
-          : "border border-gray-100 hover:border-gray-200 hover:shadow-sm"
+          : "border border-gray-100 hover:border-gray-200 hover:shadow-md"
       )}
     >
+
       {/* Top row */}
       <div className="flex items-start justify-between gap-2">
         <div className="flex items-center gap-2 min-w-0">

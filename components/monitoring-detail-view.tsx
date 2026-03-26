@@ -82,13 +82,24 @@ function ItemDetail({ item, onBack }: { item: MonitoringItem; onBack: () => void
 
 // ── Item row ──────────────────────────────────────────────────────
 
-function ItemRow({ item, onClick }: { item: MonitoringItem; onClick: () => void }) {
+function ItemRow({
+  item,
+  onClick,
+  onOpenChat,
+}: {
+  item: MonitoringItem
+  onClick: () => void
+  onOpenChat?: () => void
+}) {
   return (
-    <button
+    <div
       onClick={onClick}
-      className="w-full text-left py-4 border-b border-gray-50 last:border-0 hover:bg-gray-50/60 transition-colors cursor-pointer group"
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => e.key === "Enter" && onClick()}
+      className="w-full text-left py-4 border-b border-gray-50 last:border-0 cursor-pointer group hover:bg-gray-50/70 transition-colors duration-150"
     >
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex items-center justify-between gap-4">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1.5">
             <span className="text-[11px] text-gray-400 uppercase tracking-wide">
@@ -101,9 +112,24 @@ function ItemRow({ item, onClick }: { item: MonitoringItem; onClick: () => void 
           <p className="text-sm font-medium text-gray-900 leading-snug mb-1.5">{item.title}</p>
           <p className="text-xs text-gray-400 leading-relaxed line-clamp-2">{item.ementa}</p>
         </div>
-        <ChevronRight className="w-3.5 h-3.5 text-gray-200 group-hover:text-gray-400 flex-shrink-0 mt-1 transition-colors" />
+
+        {/* Right side: ask pill fades in on hover, chevron always visible */}
+        <div className="flex items-center gap-2 flex-shrink-0">
+          {onOpenChat && (
+            <button
+              onClick={(e) => { e.stopPropagation(); onOpenChat() }}
+              className="opacity-0 group-hover:opacity-100 transition-opacity duration-150
+                px-2.5 py-1 text-[11px] text-gray-500 border border-gray-200 rounded-full
+                hover:border-gray-900 hover:text-gray-900 hover:bg-white
+                active:scale-95 transition-all cursor-pointer whitespace-nowrap"
+            >
+              Perguntar
+            </button>
+          )}
+          <ChevronRight className="w-3.5 h-3.5 text-gray-200 group-hover:text-gray-400 transition-colors" />
+        </div>
       </div>
-    </button>
+    </div>
   )
 }
 
@@ -113,9 +139,10 @@ interface MonitoringDetailViewProps {
   monitoring: MonitoringSubscription
   onBack: () => void
   onTogglePause: (id: string) => void
+  onOpenItemChat?: (item: MonitoringItem) => void
 }
 
-export function MonitoringDetailView({ monitoring, onBack, onTogglePause }: MonitoringDetailViewProps) {
+export function MonitoringDetailView({ monitoring, onBack, onTogglePause, onOpenItemChat }: MonitoringDetailViewProps) {
   const [selectedItem, setSelectedItem] = useState<MonitoringItem | null>(null)
   const newItems = monitoring.items.filter((i) => i.isNew)
   const oldItems = monitoring.items.filter((i) => !i.isNew)
@@ -177,7 +204,7 @@ export function MonitoringDetailView({ monitoring, onBack, onTogglePause }: Moni
               <div className="mb-6">
                 <div className="divide-y divide-gray-50">
                   {newItems.map((item) => (
-                    <ItemRow key={item.id} item={item} onClick={() => setSelectedItem(item)} />
+                    <ItemRow key={item.id} item={item} onClick={() => setSelectedItem(item)} onOpenChat={onOpenItemChat ? () => onOpenItemChat(item) : undefined} />
                   ))}
                 </div>
               </div>
@@ -215,7 +242,7 @@ export function MonitoringDetailView({ monitoring, onBack, onTogglePause }: Moni
                 )}
                 <div className="divide-y divide-gray-50">
                   {oldItems.map((item) => (
-                    <ItemRow key={item.id} item={item} onClick={() => setSelectedItem(item)} />
+                    <ItemRow key={item.id} item={item} onClick={() => setSelectedItem(item)} onOpenChat={onOpenItemChat ? () => onOpenItemChat(item) : undefined} />
                   ))}
                 </div>
               </div>
