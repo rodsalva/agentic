@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { X } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { ManorAvatar } from "./manor-avatar"
@@ -21,9 +21,10 @@ interface ManorNudgeProps {
 export function ManorNudge({ nudge, onDismiss }: ManorNudgeProps) {
   const [visible, setVisible] = useState(false)
   const [leaving, setLeaving] = useState(false)
+  const [countdown, setCountdown] = useState<number | null>(null)
+  const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   useEffect(() => {
-    // Slide in
     const t = setTimeout(() => setVisible(true), 50)
     return () => clearTimeout(t)
   }, [])
@@ -34,14 +35,67 @@ export function ManorNudge({ nudge, onDismiss }: ManorNudgeProps) {
     return () => clearTimeout(t)
   }, [nudge.autoDismiss]) // eslint-disable-line react-hooks/exhaustive-deps
 
+  useEffect(() => {
+    return () => {
+      if (countdownRef.current) clearInterval(countdownRef.current)
+    }
+  }, [])
+
   function dismiss() {
     setLeaving(true)
     setTimeout(() => onDismiss(nudge.id), 300)
   }
 
+  function startCountdown() {
+    setCountdown(3)
+    countdownRef.current = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev === null) return null
+        if (prev <= 1) {
+          clearInterval(countdownRef.current!)
+          dismiss()
+          return null
+        }
+        return prev - 1
+      })
+    }, 1000)
+  }
+
+  function cancelCountdown() {
+    if (countdownRef.current) clearInterval(countdownRef.current)
+    setCountdown(null)
+  }
+
   function handleChip(chip: string) {
     nudge.onChip?.(chip)
-    dismiss()
+    startCountdown()
+  }
+
+  function handleClose() {
+    startCountdown()
+  }
+
+  if (countdown !== null) {
+    return (
+      <div
+        className={cn(
+          "w-72 bg-white border border-gray-100 rounded-2xl shadow-lg p-4 transition-all duration-300",
+          visible && !leaving ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+        )}
+      >
+        <div className="flex items-center justify-between gap-3">
+          <p className="text-xs text-gray-400">
+            Fechando em <span className="font-semibold text-gray-600">{countdown}s</span>…
+          </p>
+          <button
+            onClick={cancelCountdown}
+            className="px-2.5 py-1 text-[11px] bg-white border border-gray-200 text-gray-700 rounded-full hover:bg-gray-900 hover:text-white hover:border-gray-900 transition-all duration-150 whitespace-nowrap"
+          >
+            Não fechar
+          </button>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -70,7 +124,7 @@ export function ManorNudge({ nudge, onDismiss }: ManorNudgeProps) {
           )}
         </div>
         <button
-          onClick={dismiss}
+          onClick={handleClose}
           className="text-gray-300 hover:text-gray-500 transition-colors flex-shrink-0 p-0.5"
         >
           <X className="w-3 h-3" />
