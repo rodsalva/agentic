@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Check, ChevronRight, Scale, ArrowRight, AlertTriangle, XCircle, CheckCircle2, Download } from "lucide-react"
+import { Check, ChevronRight, Scale, Download, Lock } from "lucide-react"
 
 // ── Palette ───────────────────────────────────────────────────────
 const BG     = "#08061a"
@@ -86,29 +86,6 @@ const JUDICIAL_NODES = [
     full:   "Justiça Federal",
     status: "pending" as const,
     detail: "Porta de entrada do Judiciário. Ação anulatória ou MS podem ser distribuídos aqui após decisão do CARF.",
-  },
-]
-
-const BRIDGE = [
-  {
-    Icon:  ArrowRight,
-    color: MID,
-    text:  "A qualquer momento o contribuinte pode ir ao Judiciário",
-  },
-  {
-    Icon:  XCircle,
-    color: LOW,
-    text:  "Ao discutir o mérito no Judiciário, o administrativo perde o objeto",
-  },
-  {
-    Icon:  AlertTriangle,
-    color: LOW,
-    text:  "Questões pontuais podem coexistir sem tocar o mérito",
-  },
-  {
-    Icon:  CheckCircle2,
-    color: MID,
-    text:  "Vitória no CARF é definitiva — Fisco não pode ir ao Judiciário",
   },
 ]
 
@@ -439,11 +416,29 @@ export function LitigationMapView() {
             Onde estamos
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 200px 1fr", gap: 20, alignItems: "start" }}>
+          {/* Status banner */}
+          <div style={{
+            display: "flex", alignItems: "center", gap: 10,
+            marginBottom: 20, padding: "10px 16px",
+            borderRadius: 10,
+            background: `${AMBER}0a`,
+            border: `1px solid ${AMBER}25`,
+          }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <div style={{ width: 7, height: 7, borderRadius: "50%", background: AMBER, boxShadow: `0 0 8px ${AMBER}` }} />
+              <span style={{ fontSize: 12, fontWeight: 700, color: AMBER }}>Via Administrativa em andamento</span>
+            </div>
+            <div style={{ width: 1, height: 14, background: BORDER }} />
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <Lock style={{ width: 11, height: 11, color: LOW, strokeWidth: 2 }} />
+              <span style={{ fontSize: 12, fontWeight: 600, color: LOW }}>Via Judicial não iniciada</span>
+            </div>
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, alignItems: "start" }}>
 
             {/* ── Admin column ── */}
             <div>
-              {/* Column label */}
               <div style={{
                 display: "inline-flex", alignItems: "center", gap: 6,
                 padding: "5px 14px", borderRadius: 20, marginBottom: 16,
@@ -454,7 +449,6 @@ export function LitigationMapView() {
                 </span>
               </div>
 
-              {/* Nodes: top = highest instance */}
               <div style={{ display: "flex", flexDirection: "column" }}>
                 <AdminNode
                   node={ADMIN_NODES[0]}
@@ -476,46 +470,51 @@ export function LitigationMapView() {
               </div>
             </div>
 
-            {/* ── Bridge rules ── */}
-            <div style={{ paddingTop: 52, display: "flex", flexDirection: "column", gap: 10 }}>
-              {BRIDGE.map((rule, i) => (
-                <div key={i} style={{
-                  padding: "10px 12px", borderRadius: 9,
-                  background: CARD, border: `1px solid ${BORDER}`,
-                }}>
-                  <div style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
-                    <rule.Icon style={{ width: 11, height: 11, color: rule.color, strokeWidth: 1.8, flexShrink: 0, marginTop: 1 }} />
-                    <p style={{ margin: 0, fontSize: 10.5, color: LOW, lineHeight: 1.55 }}>
-                      {rule.text}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-
             {/* ── Judicial column ── */}
-            <div>
-              <div style={{
-                display: "inline-flex", alignItems: "center", gap: 6,
-                padding: "5px 14px", borderRadius: 20, marginBottom: 16,
-                background: JUDICIAL_TINT, border: `1px solid ${JUDICIAL_BORDER}`,
-              }}>
-                <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: JUDICIAL_LABEL }}>
-                  Judicial
-                </span>
+            <div style={{ position: "relative" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
+                <div style={{
+                  display: "inline-flex", alignItems: "center", gap: 6,
+                  padding: "5px 14px", borderRadius: 20,
+                  background: JUDICIAL_TINT, border: `1px solid ${JUDICIAL_BORDER}`,
+                  opacity: 0.5,
+                }}>
+                  <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: JUDICIAL_LABEL }}>
+                    Judicial
+                  </span>
+                </div>
+                <div style={{
+                  display: "inline-flex", alignItems: "center", gap: 5,
+                  padding: "4px 10px", borderRadius: 20,
+                  background: DIMMED, border: `1px solid ${BORDER}`,
+                }}>
+                  <Lock style={{ width: 9, height: 9, color: LOW, strokeWidth: 2 }} />
+                  <span style={{ fontSize: 9.5, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: LOW }}>
+                    Não iniciado
+                  </span>
+                </div>
               </div>
 
-              <div style={{ display: "flex", flexDirection: "column" }}>
-                {JUDICIAL_NODES.map((node, i) => (
-                  <div key={node.id}>
-                    <JudicialNode
-                      node={node}
-                      selected={selectedJudicial === node.id}
-                      onSelect={() => setSelectedJudicial(p => p === node.id ? null : node.id)}
-                    />
-                    {i < JUDICIAL_NODES.length - 1 && <UpArrow color={BORDER} />}
-                  </div>
-                ))}
+              {/* Frosted overlay to reinforce "locked" */}
+              <div style={{ position: "relative" }}>
+                <div style={{
+                  position: "absolute", inset: 0, zIndex: 2,
+                  borderRadius: 12,
+                  background: `linear-gradient(to bottom, transparent 0%, ${BG}22 100%)`,
+                  pointerEvents: "none",
+                }} />
+                <div style={{ display: "flex", flexDirection: "column", opacity: 0.28, pointerEvents: "none" }}>
+                  {JUDICIAL_NODES.map((node, i) => (
+                    <div key={node.id}>
+                      <JudicialNode
+                        node={node}
+                        selected={false}
+                        onSelect={() => {}}
+                      />
+                      {i < JUDICIAL_NODES.length - 1 && <UpArrow color={BORDER} />}
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
