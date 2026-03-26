@@ -1,10 +1,12 @@
 "use client"
 
 import React, { useState, useRef, useEffect } from "react"
-import { BookOpen, Bell, ChevronDown, Copy, Share2, Send, Loader2, Check } from "lucide-react"
+import { BookOpen, Bell, ChevronDown, Check } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { MOCK_CONVERSATIONS, type PesquisaData, type ConvMessage } from "@/lib/conversation-data"
 import type { MonitoringSubscription } from "@/lib/monitoring-data"
+import { ManorAvatar } from "./manor-avatar"
+import { AgenticScopedChat } from "./agentic-scoped-chat"
 
 // ── Inline content renderer ────────────────────────────────────────
 
@@ -40,80 +42,11 @@ function RenderContent({ content }: { content: string }) {
   )
 }
 
-// ── Scoped chat ────────────────────────────────────────────────────
-
-const MOCK_REPLIES = [
-  "Com base na jurisprudência recente, recomendo revisar as posições fiscais antes do encerramento do exercício, especialmente nos pontos identificados nas pesquisas.",
-  "A documentação robusta da racionalidade econômica é o elemento central. Posso detalhar os requisitos específicos se desejar.",
-  "Existem precedentes favoráveis que podem ser explorados dependendo das características específicas do caso. Quer que eu os liste?",
+const CONV_REPLIES = [
+  "Com base na jurisprudência recente, vale revisar as posições fiscais antes do encerramento do exercício, especialmente nos pontos identificados aqui.",
+  "A documentação da racionalidade econômica é o elemento central. Posso detalhar os requisitos específicos se quiser.",
+  "Existem precedentes favoráveis dependendo das características do caso. Quer que eu os liste?",
 ]
-
-function ScopedChat({ conversationTitle }: { conversationTitle: string }) {
-  const [messages, setMessages] = useState<{ role: "user" | "assistant"; text: string }[]>([])
-  const [input, setInput] = useState("")
-  const [loading, setLoading] = useState(false)
-  const replyIdx = React.useRef(0)
-
-  function send() {
-    const text = input.trim()
-    if (!text || loading) return
-    setMessages((p) => [...p, { role: "user", text }])
-    setInput("")
-    setLoading(true)
-    const idx = replyIdx.current % MOCK_REPLIES.length
-    replyIdx.current++
-    setTimeout(() => {
-      setMessages((p) => [...p, { role: "assistant", text: MOCK_REPLIES[idx] }])
-      setLoading(false)
-    }, 1200)
-  }
-
-  return (
-    <div className="border-t border-gray-100 flex-shrink-0 px-6 py-3">
-      {messages.length > 0 && (
-        <div className="max-w-sm mx-auto mb-2 space-y-1.5 max-h-32 overflow-y-auto">
-          {messages.map((m, i) => (
-            <div key={i} className={cn("flex", m.role === "user" ? "justify-end" : "justify-start")}>
-              <p className={cn(
-                "max-w-[80%] text-xs leading-relaxed px-3 py-1.5 rounded-2xl",
-                m.role === "user" ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-600"
-              )}>
-                {m.text}
-              </p>
-            </div>
-          ))}
-          {loading && (
-            <div className="flex justify-start">
-              <p className="text-xs text-gray-400 px-3 py-1.5 bg-gray-100 rounded-2xl">...</p>
-            </div>
-          )}
-        </div>
-      )}
-      <div className="flex justify-center">
-        <div className="flex items-center gap-2 w-full max-w-sm border border-gray-200 rounded-2xl px-3.5 py-2 bg-white">
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && send()}
-            placeholder="Digitar mensagem..."
-            className="flex-1 text-xs text-gray-700 placeholder:text-gray-400 bg-transparent outline-none"
-          />
-          <button
-            onClick={send}
-            disabled={!input.trim() || loading}
-            className={cn(
-              "flex-shrink-0 transition-colors",
-              input.trim() && !loading ? "text-gray-500 hover:text-gray-900 cursor-pointer" : "text-gray-300 cursor-not-allowed"
-            )}
-          >
-            {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
-          </button>
-        </div>
-      </div>
-    </div>
-  )
-}
 
 // ── Pesquisa proposal display ──────────────────────────────────────
 
@@ -206,16 +139,12 @@ function MonitoramentoRow({
 // ── Chat history components ────────────────────────────────────────
 
 function MIcon() {
-  return (
-    <div className="w-6 h-6 rounded-full border border-gray-100 flex items-center justify-center flex-shrink-0 mt-0.5 bg-white">
-      <span className="text-[13px] font-normal text-gray-800 leading-none" style={{ fontFamily: "var(--font-playfair)" }}>M</span>
-    </div>
-  )
+  return <ManorAvatar state="idle" size="xs" className="flex-shrink-0 mt-0.5" />
 }
 
 function RSAvatar() {
   return (
-    <div className="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0 text-white text-[9px] font-bold">
+    <div className="w-6 h-6 rounded-full bg-gray-800 flex items-center justify-center flex-shrink-0 text-white text-[9px] font-bold">
       RS
     </div>
   )
@@ -319,7 +248,7 @@ function ChatHistory({
               <MIcon />
               <div className="space-y-3 flex-1 min-w-0">
                 {mon && <MonitoringProposalCard monitoring={mon} onClick={() => onViewMonitoring(mon.id)} />}
-                <p className="text-sm text-gray-700 leading-relaxed">Monitoramento criado. Posso ajudar em algo mais?</p>
+                <p className="text-sm text-gray-700 leading-relaxed">Feito. Estarei de olho nesse tema e te aviso quando algo aparecer.</p>
               </div>
             </div>
           )
@@ -484,7 +413,10 @@ export function ConversationDetailView({ conversationId, onBack, onViewMonitorin
       </div>
 
       {/* ── Chat input ──────────────────────────────────────────── */}
-      <ScopedChat conversationTitle={conversation.title} />
+      <AgenticScopedChat
+        placeholder={`Pergunte sobre ${conversation.title}...`}
+        replies={CONV_REPLIES}
+      />
     </div>
   )
 }

@@ -117,7 +117,7 @@ export function MonitoringsListView({
             <h1 className="text-base font-semibold text-gray-900">Monitoramentos</h1>
             {totalUpdates > 0 ? (
               <p className="text-xs text-gray-400 mt-0.5">
-                {totalUpdates} {totalUpdates === 1 ? "atualização ainda não vista" : "atualizações ainda não vistas"}
+                {monitorings.length} {monitorings.length === 1 ? "monitoramento" : "monitoramentos"} com {totalUpdates} {totalUpdates === 1 ? "atualização ainda não vista" : "atualizações ainda não vistas"}
               </p>
             ) : (
               <p className="text-xs text-gray-400 mt-0.5">{monitorings.length} ativos</p>

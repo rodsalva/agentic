@@ -5,6 +5,7 @@ import { Send, Zap, Bell, Search, BookOpen, Plus, X, ArrowRight, ChevronDown, Ch
 import { cn } from "@/lib/utils"
 import type { MonitoringSubscription } from "@/lib/monitoring-data"
 import type { InputMode } from "./manor-chat"
+import { ManorAvatar, TypingIndicator } from "./manor-avatar"
 
 // ── Types ─────────────────────────────────────────────────────────
 
@@ -32,9 +33,9 @@ type Message = {
 const TOTAL_UPDATES = 103
 
 const PLACEHOLDERS: Record<InputMode, string> = {
-  default: "Criar pesquisa ou monitoramento...",
+  default: "Fala comigo ou me peça algo...",
   pesquisar: "O que você quer pesquisar?",
-  monitorar: "Descreva o tema a monitorar...",
+  monitorar: "Descreva o tema e eu fico de olho...",
 }
 
 const PESQUISA_SUGGESTIONS = [
@@ -141,11 +142,7 @@ O Conselho Administrativo de Recursos Fiscais possui acórdãos relevantes sobre
 // ── Shared UI ─────────────────────────────────────────────────────
 
 function MIcon() {
-  return (
-    <div className="w-6 h-6 rounded-full bg-white border border-gray-100 flex items-center justify-center flex-shrink-0">
-      <span className="text-[13px] font-normal text-gray-800 leading-none" style={{ fontFamily: "var(--font-playfair)" }}>M</span>
-    </div>
-  )
+  return <ManorAvatar state="idle" size="xs" className="flex-shrink-0" />
 }
 
 function RSAvatar() {
@@ -816,6 +813,7 @@ export function ChatArea({
 }: ChatAreaProps) {
   const [message, setMessage] = useState("")
   const [pesquisaDepth, setPesquisaDepth] = useState<PesquisaDepth>("padrao")
+  const [greetingPhase, setGreetingPhase] = useState<"typing" | "ready">("typing")
   const hasCalledFirstMessage = useRef(!!digestInitialMessage)
   const [messages, setMessages] = useState<Message[]>(() => {
     if (!digestInitialMessage) return []
@@ -831,6 +829,13 @@ export function ChatArea({
   const plusRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
 
+
+  // Proactive greeting: "typing" for 1.1s then show message
+  useEffect(() => {
+    if (messages.length > 0) return // skip if already in a conversation
+    const t = setTimeout(() => setGreetingPhase("ready"), 1100)
+    return () => clearTimeout(t)
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (inputRef.current) inputRef.current.focus()
@@ -881,7 +886,7 @@ export function ChatArea({
     setTimeout(() => {
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: "Entendido. Estou processando sua solicitação..." },
+        { role: "assistant", content: "Entendido. Deixa eu verificar isso para você." },
       ])
     }, 500)
   }
@@ -941,28 +946,66 @@ export function ChatArea({
     setTimeout(() => inputRef.current?.focus(), 50)
   }
 
+  // Build greeting based on live monitoring data
+  const totalNew = monitorings.reduce((acc, m) => acc + (m.newCount ?? 0), 0)
+  const greetingMessage = totalNew > 0
+    ? `Tenho **${totalNew} ${totalNew === 1 ? "novidade" : "novidades"}** nos seus monitoramentos desde a última vez. Quer ver o que mudou, ou prefere começar por uma pesquisa?`
+    : `Tudo em dia nos seus monitoramentos. O que você quer fazer hoje?`
+  const greetingChips = totalNew > 0
+    ? ["Ver novidades", "Fazer pesquisa", "Criar monitoramento"]
+    : ["Fazer pesquisa", "Ver monitoramentos", "Criar monitoramento"]
+
   // ── Welcome screen ──────────────────────────────────────────────
   const renderWelcome = () => (
     <div className="flex-1 flex flex-col items-center justify-center px-6 pb-12">
       <div className="max-w-lg w-full flex flex-col items-center">
 
-        {/* Brand */}
-        <img src="/manor-logo.svg" alt="Manor" className="h-10 mb-3" />
-        <p className="text-sm text-gray-400 mb-12">Inteligência para o direito tributário federal</p>
-
-
-        {/* Updates pill — above input, default mode only */}
+        {/* Proactive greeting from Manor */}
         {inputMode === "default" && (
-          <div className="flex justify-center mb-8">
-            <button
-              onClick={handleDigestClick}
-              className="group flex items-center gap-2 px-4 py-2 border border-gray-200 hover:border-gray-300 hover:bg-gray-50 rounded-full transition-all cursor-pointer"
-            >
-              <Zap className="w-3.5 h-3.5 text-blue-500 group-hover:text-blue-600 transition-colors" />
-              <span className="text-xs text-gray-500 group-hover:text-gray-700 transition-colors">
-                {TOTAL_UPDATES} atualizações nas últimas 24h
-              </span>
-            </button>
+          <div className="w-full mb-10">
+            <div className="flex items-start gap-3 max-w-sm">
+              <ManorAvatar
+                state={greetingPhase === "typing" ? "speaking" : totalNew > 0 ? "active" : "idle"}
+                size="md"
+                hasNews={totalNew > 0}
+                className="flex-shrink-0 mt-0.5"
+              />
+              <div className="space-y-2.5">
+                {greetingPhase === "typing" ? (
+                  <div className="bg-gray-50 rounded-2xl rounded-tl-sm px-4 py-3">
+                    <TypingIndicator />
+                  </div>
+                ) : (
+                  <>
+                    <div className="bg-gray-50 rounded-2xl rounded-tl-sm px-4 py-3 animate-fade-in-up">
+                      <p className="text-sm text-gray-800 leading-relaxed">
+                        {greetingMessage.split(/(\*\*[^*]+\*\*)/).map((part, i) =>
+                          part.startsWith("**") && part.endsWith("**")
+                            ? <strong key={i} className="font-semibold text-gray-900">{part.slice(2, -2)}</strong>
+                            : <span key={i}>{part}</span>
+                        )}
+                      </p>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5 animate-fade-in-up [animation-delay:120ms]">
+                      {greetingChips.map((chip) => (
+                        <button
+                          key={chip}
+                          onClick={() => {
+                            if (chip === "Ver novidades") handleDigestClick()
+                            else if (chip === "Fazer pesquisa") handleModeSelect("pesquisar")
+                            else if (chip === "Criar monitoramento") handleModeSelect("monitorar")
+                            else if (chip === "Ver monitoramentos") onShowDigest()
+                          }}
+                          className="px-3 py-1.5 text-xs bg-white border border-gray-200 text-gray-700 rounded-full hover:bg-gray-900 hover:text-white hover:border-gray-900 transition-all duration-150"
+                        >
+                          {chip}
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
           </div>
         )}
 
@@ -1206,7 +1249,7 @@ export function ChatArea({
                     onCreateMonitoring={onCreateMonitoringFromChat}
                     onConfirmed={() => setMessages((prev) => [
                       ...prev,
-                      { role: "assistant", content: "Monitoramento criado. Posso ajudar em algo mais?", contextType: "monitoring-created" },
+                      { role: "assistant", content: "Feito. Estarei de olho nesse tema e te aviso quando aparecer algo relevante.", contextType: "monitoring-created" },
                     ])}
                   />
                 </div>
@@ -1215,9 +1258,10 @@ export function ChatArea({
 
             if (msg.contextType === "monitoring-created") {
               return (
-                <div key={index} className="flex justify-start">
-                  <div className="bg-gray-100 rounded-2xl px-5 py-3.5">
-                    <p className="text-sm text-gray-800">{msg.content}</p>
+                <div key={index} className="flex items-start gap-2 justify-start">
+                  <ManorAvatar state="idle" size="xs" className="flex-shrink-0 mt-1" />
+                  <div className="bg-gray-50 rounded-2xl rounded-tl-sm px-4 py-3">
+                    <p className="text-sm text-gray-800 leading-relaxed">{msg.content}</p>
                   </div>
                 </div>
               )
@@ -1250,8 +1294,11 @@ export function ChatArea({
                       <RSAvatar />
                     </>
                   ) : (
-                    <div className="bg-gray-100 rounded-2xl px-5 py-3.5 max-w-[80%]">
-                      <p className="text-sm text-gray-800">{msg.content}</p>
+                    <div className="flex items-start gap-2 max-w-[80%]">
+                      <ManorAvatar state="idle" size="xs" className="flex-shrink-0 mt-1" />
+                      <div className="bg-gray-50 rounded-2xl rounded-tl-sm px-4 py-3">
+                        <p className="text-sm text-gray-800 leading-relaxed">{msg.content}</p>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -1269,7 +1316,7 @@ export function ChatArea({
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Digitar mensagem..."
+              placeholder="Fala comigo..."
               autoFocus
               className="w-full px-5 py-4 pr-14 border border-gray-200 rounded-full text-sm text-gray-600 placeholder:text-gray-400 focus:outline-none focus:ring-0 focus:border-gray-300"
             />

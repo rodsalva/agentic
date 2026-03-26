@@ -463,10 +463,7 @@ function SearchResultsView({
       {/* No results state */}
       {noResults && (
         <div className="px-5 py-8 text-center">
-          <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-3">
-            <Search className="w-4 h-4 text-gray-400" />
-          </div>
-          <p className="text-sm text-gray-600 font-medium mb-1">Nenhum resultado encontrado</p>
+          <p className="text-sm text-gray-600 font-medium mb-1">Nenhum resultado</p>
           <p className="text-xs text-gray-400 mb-4">Tente termos como:</p>
           <div className="flex flex-wrap justify-center gap-1.5">
             {["IRPJ", "PIS/COFINS", "STJ", "ágio", "PLR"].map(t => (
